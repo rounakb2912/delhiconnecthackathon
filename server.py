@@ -44,6 +44,7 @@ from traffic.model import TrafficModel
 from traffic.predictor import TrafficPredictor
 from routing.graph import build_graph, update_weights
 from routing.planner import plan_route, get_route_geojson, haversine
+from routing.branching import get_corridor_branches
 
 DATA_DIR = os.path.join(PROJECT_ROOT, "data")
 TELEMETRY_PATH = os.path.join(DATA_DIR, "synthetic_telemetry.csv")
@@ -165,12 +166,22 @@ class RouteRequest(BaseModel):
 def get_system_status():
     """Return overall real-time telematics status and KPI metrics."""
     df = state.raw_df
-    total_buses = len(df["bus_id"].unique()) if df is not None and "bus_id" in df.columns else 0
+    if df is not None and not df.empty and "bus_id" in df.columns:
+        if "timestamp" in df.columns:
+            latest = df.sort_values("timestamp").groupby("bus_id").last().reset_index()
+        else:
+            latest = df.groupby("bus_id").last().reset_index()
 
-    speeds = df["speed"].fillna(0.0) if df is not None and "speed" in df.columns else pd.Series([0.0])
-    moving_buses = int((speeds >= 5.0).sum())
-    idle_buses = total_buses - moving_buses
-    fleet_avg_speed = float(speeds.mean()) if total_buses > 0 else 0.0
+        total_buses = len(latest)
+        speeds = latest["speed"].fillna(0.0) if "speed" in latest.columns else pd.Series([0.0] * total_buses)
+        moving_buses = int((speeds >= 5.0).sum())
+        idle_buses = max(0, total_buses - moving_buses)
+        fleet_avg_speed = float(speeds.mean()) if total_buses > 0 else 0.0
+    else:
+        total_buses = 0
+        moving_buses = 0
+        idle_buses = 0
+        fleet_avg_speed = 0.0
 
     return {
         "is_live": state.is_live,
@@ -251,9 +262,62 @@ def get_road_segments():
     return res
 
 
+METRO_INTERCHANGES = {
+    "S01": ["Blue Line", "Yellow Line"],
+    "S02": ["Blue Line", "Yellow Line"],
+    "S03": ["Yellow Line", "Violet Line"],
+    "S04": ["Blue Line", "Violet Line"],
+    "S05": ["Yellow Line"],
+    "S06": ["Red Line", "Yellow Line", "Violet Line"],
+    "S07": ["Yellow Line"],
+    "S08": ["Violet Line"],
+    "S09": ["Violet Line"],
+    "S10": ["Violet Line"],
+    "S11": ["Yellow Line"],
+    "S12": ["Yellow Line", "Pink Line"],
+    "S13": ["Pink Line"],
+    "S14": ["Violet Line", "Pink Line"],
+    "S15": ["Violet Line"],
+    "S16": ["Violet Line", "Magenta Line"],
+    "S17": ["Violet Line"],
+    "S18": ["Yellow Line"],
+    "S19": ["Yellow Line", "Magenta Line"],
+    "S20": ["Yellow Line"],
+    "S21": ["Airport Express", "Pink Line"],
+    "S22": ["Blue Line"],
+    "S23": ["Blue Line"],
+    "S24": ["Blue Line"],
+    "S25": ["Blue Line"],
+    "S26": ["Red Line"],
+    "S27": ["Red Line"],
+    "S28": ["Red Line"],
+    "S29": ["Red Line"],
+    "S30": ["Red Line", "Pink Line"],
+    "S31": ["Red Line"],
+    "S32": ["Red Line"],
+    "S33": ["Red Line"],
+    "S34": ["Red Line"],
+    "S35": ["Yellow Line", "Pink Line"],
+    "S36": ["Yellow Line"],
+    "S37": ["Yellow Line"],
+    "S38": ["Yellow Line"],
+    "S39": ["Yellow Line"],
+    "S40": ["Yellow Line"],
+    "S41": ["Blue Line"],
+    "S42": ["Blue Line"],
+    "S43": ["Blue Line"],
+    "S44": ["Blue Line", "Pink Line", "RRTS"],
+    "S45": ["Blue Line", "Pink Line"],
+    "S46": ["Blue Line", "Magenta Line"],
+    "S47": ["Blue Line"],
+    "S48": ["Blue Line"],
+    "S49": ["Blue Line", "Magenta Line"],
+    "S50": ["Blue Line", "Airport Express"],
+}
+
 @app.get("/api/stops")
 def get_bus_stops():
-    """Return all bus stops with geographic coordinates and served route IDs."""
+    """Return all bus stops with geographic coordinates, served route IDs, and Metro connectivity."""
     try:
         stop_route_map = {}
         for route in BUS_ROUTES:
@@ -273,6 +337,7 @@ def get_bus_stops():
             "lat": s["lat"],
             "lon": s["lon"],
             "routes": stop_route_map.get(sid, []),
+            "metro_lines": METRO_INTERCHANGES.get(sid, []),
         })
     return stops_data
 
@@ -374,6 +439,12 @@ def calculate_optimal_route(req: RouteRequest):
                 "meta": f"ETA ~{eta:.0f} mins",
             })
 
+        # Extract ordered [lat, lon] waypoints for smooth frontend animation and HUD
+        route_latlngs = []
+        if geojson and "features" in geojson and len(geojson["features"]) > 0:
+            coords = geojson["features"][0].get("geometry", {}).get("coordinates", [])
+            route_latlngs = [[round(float(c[1]), 5), round(float(c[0]), 5)] for c in coords]
+
         return {
             "success": True,
             "distance_km": round(dist, 2),
@@ -385,6 +456,7 @@ def calculate_optimal_route(req: RouteRequest):
             "segments_count": len(route.get("segments", [])),
             "segments": route.get("segments", []),
             "geojson": geojson,
+            "route_latlngs": route_latlngs,
         }
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Routing failed: {str(e)}")
@@ -498,6 +570,30 @@ def get_live_traffic_and_fleet_alerts():
     return alerts
 
 
+@app.get("/api/corridor-branches")
+def get_corridor_branches_endpoint(origin: str = "Connaught Place", destination: str = "AIIMS"):
+    """
+    Analyze multi-route corridor branching and bus distributions between 2 stops.
+    """
+    fleet_data = get_fleet_telemetry(limit=1000)
+    return get_corridor_branches(origin, destination, fleet_data)
+
+
+@app.post("/api/resolve-bunching")
+def resolve_bunching_dispatch(route_id: str, hold_minutes: int = 4):
+    """
+    Simulated dispatch instruction to hold a clumping bus and rebalance headway.
+    """
+    return {
+        "status": "DISPATCH_COMMAND_ISSUED",
+        "route_id": route_id,
+        "hold_duration_minutes": hold_minutes,
+        "action": f"Holding trailing bus on Route {route_id} for {hold_minutes} minutes at upcoming terminal",
+        "projected_headway_recovery": "8.5 minutes (Standard Timetable)",
+        "timestamp": datetime.now().strftime("%I:%M:%S %p"),
+    }
+
+
 @app.post("/api/refresh")
 async def force_refresh(bg: BackgroundTasks):
     """Trigger an immediate live telemetry sync in the background."""
@@ -515,12 +611,12 @@ STATIC_DIR = os.path.join(PROJECT_ROOT, "static")
 @app.get("/", include_in_schema=False)
 async def serve_root():
     """Serve the unified single-page application entrypoint."""
-    dist_index = os.path.join(FRONTEND_DIST, "index.html")
     static_index = os.path.join(STATIC_DIR, "index.html")
-    if os.path.exists(dist_index):
-        return FileResponse(dist_index)
+    dist_index = os.path.join(FRONTEND_DIST, "index.html")
     if os.path.exists(static_index):
         return FileResponse(static_index)
+    if os.path.exists(dist_index):
+        return FileResponse(dist_index)
     return {"status": "ok", "message": "Delhi Bus Traffic Engine API is active. Static frontend not found."}
 
 
