@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -9,56 +9,95 @@
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
   <!-- Leaflet GIS CSS & JS -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 
-  <!-- React 18, ReactDOM & Babel for Single-File Merged Architecture -->
+  <!-- React 18, ReactDOM & Babel -->
   <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
   <style>
     :root {
-      --bg-dark: #0b0f19;
-      --bg-card: rgba(15, 23, 42, 0.78);
-      --border-subtle: rgba(255, 107, 53, 0.25);
-      --border-accent: rgba(255, 107, 53, 0.6);
-      --text-main: #f1f5f9;
+      --bg-base: #070b14;
+      --bg-card: rgba(15, 23, 42, 0.82);
+      --bg-card-hover: rgba(30, 41, 59, 0.9);
+      --bg-elevated: #131d31;
+      --border-subtle: rgba(255, 107, 53, 0.22);
+      --border-accent: rgba(255, 107, 53, 0.65);
+      --border-glass: rgba(255, 255, 255, 0.08);
+      --text-main: #f8fafc;
       --text-muted: #94a3b8;
+      --text-dim: #64748b;
       --primary-orange: #ff6b35;
+      --primary-glow: rgba(255, 107, 53, 0.35);
+      --accent-cyan: #00f0ff;
+      --accent-emerald: #10b981;
+      --accent-amber: #f59e0b;
+      --accent-rose: #ef4444;
+      --accent-indigo: #6366f1;
+      --card-shadow: 0 10px 32px -4px rgba(0, 0, 0, 0.55);
+    }
+
+    [data-theme="light"] {
+      --bg-base: #f4f6fa;
+      --bg-card: rgba(255, 255, 255, 0.94);
+      --bg-card-hover: rgba(248, 250, 252, 1);
+      --bg-elevated: #e2e8f0;
+      --border-subtle: rgba(255, 107, 53, 0.28);
+      --border-accent: rgba(255, 107, 53, 0.85);
+      --border-glass: rgba(0, 0, 0, 0.08);
+      --text-main: #0f172a;
+      --text-muted: #475569;
+      --text-dim: #94a3b8;
+      --primary-orange: #ea580c;
+      --primary-glow: rgba(234, 88, 12, 0.25);
+      --accent-cyan: #0284c7;
+      --accent-emerald: #059669;
+      --accent-amber: #d97706;
+      --accent-rose: #dc2626;
+      --accent-indigo: #4f46e5;
+      --card-shadow: 0 10px 30px -4px rgba(0, 0, 0, 0.1);
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
       font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-      background-color: var(--bg-dark);
+      background-color: var(--bg-base);
       color: var(--text-main);
       min-height: 100vh;
       overflow-x: hidden;
+      transition: background-color 0.3s ease, color 0.3s ease;
     }
 
     .top-tricolor-bar {
       height: 4px;
       background: linear-gradient(90deg, #FF9933 0%, #FFFFFF 50%, #138808 100%);
-      box-shadow: 0 0 14px rgba(255, 153, 51, 0.7);
+      box-shadow: 0 0 16px rgba(255, 153, 51, 0.8);
       width: 100%;
     }
 
     .glass-panel {
       background: var(--bg-card);
-      border: 1px solid var(--border-subtle);
+      border: 1px solid var(--border-glass);
       border-radius: 14px;
-      backdrop-filter: blur(16px);
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      box-shadow: var(--card-shadow);
+      transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
     }
 
     .glass-panel-glow {
+      border-color: var(--border-subtle);
+      box-shadow: var(--card-shadow), 0 0 20px rgba(255, 107, 53, 0.12);
+    }
+
+    .glass-panel-glow:hover {
       border-color: var(--border-accent);
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45), 0 0 16px rgba(255, 107, 53, 0.15);
     }
 
     /* Leaflet Overrides */
@@ -68,47 +107,32 @@
     }
 
     .leaflet-popup-content-wrapper {
-      background: rgba(15, 23, 42, 0.95) !important;
-      color: #f1f5f9 !important;
-      border: 1px solid rgba(255, 107, 53, 0.4) !important;
-      border-radius: 10px !important;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.6) !important;
-      backdrop-filter: blur(12px) !important;
+      background: var(--bg-card) !important;
+      color: var(--text-main) !important;
+      border: 1px solid var(--border-subtle) !important;
+      border-radius: 12px !important;
+      box-shadow: 0 12px 36px rgba(0,0,0,0.6) !important;
+      backdrop-filter: blur(16px) !important;
+      padding: 4px !important;
     }
     .leaflet-popup-tip {
-      background: rgba(15, 23, 42, 0.95) !important;
-      border: 1px solid rgba(255, 107, 53, 0.4) !important;
+      background: var(--bg-card) !important;
+      border: 1px solid var(--border-subtle) !important;
     }
 
     .leaflet-control-layers {
-      background: rgba(15, 23, 42, 0.94) !important;
-      border: 1px solid rgba(255, 107, 53, 0.45) !important;
+      background: var(--bg-card) !important;
+      border: 1px solid var(--border-subtle) !important;
       border-radius: 12px !important;
-      color: #f1f5f9 !important;
-      backdrop-filter: blur(14px) !important;
-      -webkit-backdrop-filter: blur(14px) !important;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.65), 0 0 16px rgba(255, 107, 53, 0.15) !important;
+      color: var(--text-main) !important;
+      backdrop-filter: blur(16px) !important;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5) !important;
       padding: 10px 14px !important;
     }
-    .leaflet-control-layers, .leaflet-control-layers * {
-      color: #f1f5f9 !important;
-    }
-    .leaflet-control-layers-toggle {
-      background-color: rgba(15, 23, 42, 0.92) !important;
-      border: 1px solid rgba(255, 107, 53, 0.5) !important;
-      border-radius: 10px !important;
-      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5) !important;
-      transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease !important;
-    }
-    .leaflet-control-layers-toggle:hover {
-      transform: scale(1.08) !important;
-      border-color: #ff9933 !important;
-      box-shadow: 0 0 16px rgba(255, 153, 51, 0.6) !important;
-    }
     .leaflet-control-layers label {
-      color: #cbd5e1 !important;
+      color: var(--text-main) !important;
       font-size: 12px !important;
-      font-weight: 500 !important;
+      font-weight: 600 !important;
       margin-bottom: 6px !important;
       cursor: pointer !important;
       display: flex !important;
@@ -116,28 +140,22 @@
       gap: 6px !important;
     }
     .leaflet-control-layers label:hover {
-      color: #ff9933 !important;
+      color: var(--primary-orange) !important;
     }
-    .leaflet-control-layers input[type="radio"], .leaflet-control-layers input[type="checkbox"] {
-      accent-color: #ff6b35 !important;
-      cursor: pointer !important;
-      width: 15px !important;
-      height: 15px !important;
-    }
+
     .leaflet-control-zoom {
-      border: 1px solid rgba(255, 107, 53, 0.35) !important;
+      border: 1px solid var(--border-subtle) !important;
       border-radius: 10px !important;
       overflow: hidden !important;
-      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5) !important;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4) !important;
     }
     .leaflet-control-zoom a {
-      background: rgba(15, 23, 42, 0.92) !important;
-      color: #ff9933 !important;
-      border-color: rgba(255, 255, 255, 0.1) !important;
-      transition: background 0.2s ease, color 0.2s ease !important;
+      background: var(--bg-card) !important;
+      color: var(--primary-orange) !important;
+      border-color: var(--border-glass) !important;
     }
     .leaflet-control-zoom a:hover {
-      background: rgba(255, 107, 53, 0.3) !important;
+      background: rgba(255, 107, 53, 0.25) !important;
       color: #ffffff !important;
     }
 
@@ -145,6 +163,23 @@
       0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
       70% { box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
       100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+    }
+
+    @keyframes pulseOrange {
+      0% { box-shadow: 0 0 0 0 rgba(255, 107, 53, 0.7); }
+      70% { box-shadow: 0 0 0 12px rgba(255, 107, 53, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(255, 107, 53, 0); }
+    }
+
+    @keyframes pulseCyan {
+      0% { box-shadow: 0 0 0 0 rgba(0, 240, 255, 0.8); }
+      70% { box-shadow: 0 0 0 14px rgba(0, 240, 255, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(0, 240, 255, 0); }
+    }
+
+    @keyframes waveBar {
+      0%, 100% { height: 6px; }
+      50% { height: 22px; }
     }
 
     .pulse-dot-green {
@@ -156,27 +191,293 @@
       animation: pulseGreen 2s infinite;
     }
 
+    .pulse-dot-orange {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background-color: #ff6b35;
+      display: inline-block;
+      animation: pulseOrange 2s infinite;
+    }
+
+    .pulse-dot-cyan {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background-color: #00f0ff;
+      display: inline-block;
+      animation: pulseCyan 1.6s infinite;
+    }
+
+    .audio-bar {
+      width: 3px;
+      background: #ff6b35;
+      border-radius: 3px;
+      animation: waveBar 0.8s ease-in-out infinite;
+    }
+    .audio-bar:nth-child(2) { animation-delay: 0.15s; }
+    .audio-bar:nth-child(3) { animation-delay: 0.3s; }
+    .audio-bar:nth-child(4) { animation-delay: 0.45s; }
+    .audio-bar:nth-child(5) { animation-delay: 0.2s; }
+
+    /* Custom Scrollbar */
     ::-webkit-scrollbar { width: 6px; height: 6px; }
-    ::-webkit-scrollbar-track { background: #0b0f19; }
+    ::-webkit-scrollbar-track { background: var(--bg-base); }
     ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
-    ::-webkit-scrollbar-thumb:hover { background: #ff6b35; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--primary-orange); }
+
+    .tag-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 9px;
+      border-radius: 20px;
+      font-size: 0.72rem;
+      font-weight: 700;
+    }
+
+    .metro-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: rgba(99, 102, 241, 0.18);
+      border: 1px solid rgba(99, 102, 241, 0.45);
+      color: #818cf8;
+      padding: 2px 7px;
+      border-radius: 12px;
+      font-size: 0.68rem;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .toast-container {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      pointer-events: none;
+    }
+
+    .toast-item {
+      pointer-events: auto;
+      background: rgba(15, 23, 42, 0.95);
+      color: #f8fafc;
+      border: 1px solid var(--border-accent);
+      border-radius: 10px;
+      padding: 12px 18px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+      backdrop-filter: blur(12px);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      animation: slideInRight 0.3s ease;
+      min-width: 280px;
+    }
+
+    @keyframes slideInRight {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+
+    .hud-card {
+      background: rgba(15, 23, 42, 0.92);
+      border: 1px solid var(--border-accent);
+      border-radius: 12px;
+      padding: 10px 16px;
+      box-shadow: 0 12px 36px rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(14px);
+    }
   </style>
 </head>
 <body>
   <div id="root"></div>
 
   <script type="text/babel">
-    const { useState, useEffect, useRef, useMemo } = React;
+    const { useState, useEffect, useRef, useMemo, useCallback } = React;
 
     const CONGESTION_COLORS = {
-      free_flow: '#2ecc71',
-      moderate: '#f1c40f',
-      heavy: '#e67e22',
-      gridlock: '#e74c3c',
-      severe: '#e74c3c',
+      free_flow: '#10b981',
+      moderate: '#f59e0b',
+      heavy: '#f97316',
+      gridlock: '#ef4444',
+      severe: '#ef4444',
     };
 
+    // Helper: Haversine distance in meters
+    function calcHaversine(lat1, lon1, lat2, lon2) {
+      const R = 6371000;
+      const dLat = (lat2 - lat1) * Math.PI / 180;
+      const dLon = (lon2 - lon1) * Math.PI / 180;
+      const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                Math.sin(dLon/2) * Math.sin(dLon/2);
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+      return R * c;
+    }
+
+    // Speech synthesis announcement
+    function speakText(text) {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const u = new SpeechSynthesisUtterance(text);
+        u.lang = 'en-IN';
+        u.rate = 1.0;
+        u.pitch = 1.0;
+        window.speechSynthesis.speak(u);
+      }
+    }
+
+    // Audio chime for dispatcher actions
+    function playChime(type = 'success') {
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        if (type === 'success') {
+          osc.frequency.setValueAtTime(523.25, ctx.currentTime);
+          osc.frequency.exponentialRampToValueAtTime(783.99, ctx.currentTime + 0.18);
+        } else {
+          osc.frequency.setValueAtTime(440, ctx.currentTime);
+          osc.frequency.exponentialRampToValueAtTime(330, ctx.currentTime + 0.18);
+        }
+        gain.gain.setValueAtTime(0.12, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.28);
+        osc.start();
+        osc.stop(ctx.currentTime + 0.3);
+      } catch (e) {}
+    }
+
+    // --- Autocomplete Stop Input Component ---
+    function StopAutocomplete({ label, value, onChange, stops, placeholder, icon }) {
+      const [isOpen, setIsOpen] = useState(false);
+      const [search, setSearch] = useState('');
+      const wrapperRef = useRef(null);
+
+      useEffect(() => {
+        setSearch(value || '');
+      }, [value]);
+
+      useEffect(() => {
+        function handleClickOutside(event) {
+          if (wrapperRef.current && !wrapperRef.current.contains(event.target)) {
+            setIsOpen(false);
+          }
+        }
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+      }, []);
+
+      const filteredStops = useMemo(() => {
+        const q = search.trim().toLowerCase();
+        if (!q) return stops.slice(0, 12);
+        return stops.filter(s =>
+          s.name.toLowerCase().includes(q) ||
+          s.stop_id.toLowerCase().includes(q) ||
+          (s.metro_lines || []).some(m => m.toLowerCase().includes(q))
+        ).slice(0, 12);
+      }, [search, stops]);
+
+      return (
+        <div ref={wrapperRef} style={{ position: 'relative', width: '100%' }}>
+          <label style={{ fontSize: '0.74rem', color: 'var(--text-muted)', display: 'block', marginBottom: '4px', fontWeight: 600 }}>
+            {label}
+          </label>
+          <div style={{ position: 'relative' }}>
+            <span style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', fontSize: '1rem', pointerEvents: 'none' }}>
+              {icon}
+            </span>
+            <input
+              type="text"
+              value={search}
+              placeholder={placeholder || 'Type stop or metro...'}
+              onFocus={() => setIsOpen(true)}
+              onChange={e => {
+                setSearch(e.target.value);
+                setIsOpen(true);
+              }}
+              style={{
+                width: '100%',
+                background: 'var(--bg-elevated)',
+                color: 'var(--text-main)',
+                border: '1px solid var(--border-subtle)',
+                borderRadius: '8px',
+                padding: '9px 12px 9px 34px',
+                fontSize: '0.84rem',
+                fontWeight: 600,
+                outline: 'none',
+              }}
+            />
+            {search && (
+              <button
+                type="button"
+                onClick={() => { setSearch(''); onChange(''); setIsOpen(true); }}
+                style={{
+                  position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)',
+                  background: 'transparent', border: 'none', color: 'var(--text-dim)', cursor: 'pointer', fontSize: '0.8rem'
+                }}
+              >
+                ✕
+              </button>
+            )}
+          </div>
+
+          {isOpen && (
+            <div style={{
+              position: 'absolute', top: '100%', left: 0, right: 0, zIndex: 1000,
+              background: 'var(--bg-card)', border: '1px solid var(--border-accent)',
+              borderRadius: '10px', marginTop: '4px', maxHeight: '240px', overflowY: 'auto',
+              boxShadow: '0 12px 32px rgba(0,0,0,0.65)', backdropFilter: 'blur(16px)'
+            }}>
+              {filteredStops.length > 0 ? (
+                filteredStops.map(s => (
+                  <div
+                    key={s.stop_id}
+                    onClick={() => {
+                      onChange(s.name);
+                      setSearch(s.name);
+                      setIsOpen(false);
+                    }}
+                    style={{
+                      padding: '8px 12px', borderBottom: '1px solid var(--border-glass)',
+                      cursor: 'pointer', transition: 'background 0.15s ease',
+                    }}
+                    onMouseEnter={e => e.currentTarget.style.background = 'var(--bg-card-hover)'}
+                    onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+                  >
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <strong style={{ fontSize: '0.84rem', color: 'var(--text-main)' }}>{s.name}</strong>
+                      <span style={{ fontSize: '0.7rem', color: 'var(--text-dim)', fontFamily: "'JetBrains Mono', monospace" }}>{s.stop_id}</span>
+                    </div>
+                    {s.metro_lines && s.metro_lines.length > 0 && (
+                      <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap', marginTop: '3px' }}>
+                        {s.metro_lines.map((m, mIdx) => (
+                          <span key={mIdx} className="metro-badge">🚇 {m}</span>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                ))
+              ) : (
+                <div style={{ padding: '10px', fontSize: '0.78rem', color: 'var(--text-dim)', textAlign: 'center' }}>
+                  No stops found matching "{search}"
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    // --- Main App Component ---
     function App() {
+      const [theme, setTheme] = useState('dark');
       const [status, setStatus] = useState({});
       const [fleet, setFleet] = useState([]);
       const [segments, setSegments] = useState([]);
@@ -199,31 +500,44 @@
         walkshed: false,
       });
 
+      // Alerts & Branching
       const [alerts, setAlerts] = useState({ bottlenecks: [], bunching: [], timestamp: '' });
       const [branchOrigin, setBranchOrigin] = useState('Connaught Place');
       const [branchDest, setBranchDest] = useState('AIIMS');
       const [branchData, setBranchData] = useState(null);
       const [branchLoading, setBranchLoading] = useState(false);
 
-      const fetchBranches = async (o = branchOrigin, d = branchDest) => {
-        setBranchLoading(true);
-        try {
-          const res = await fetch(`/api/corridor-branches?origin=${encodeURIComponent(o)}&destination=${encodeURIComponent(d)}`);
-          if (res.ok) {
-            setBranchData(await res.json());
-          }
-        } catch (err) {
-          console.error('Failed to load corridor branches:', err);
-        } finally {
-          setBranchLoading(false);
-        }
-      };
+      // New Interactive States
       const [selectedStopData, setSelectedStopData] = useState(null);
+      const [trackingBus, setTrackingBus] = useState(null); // Bus ID currently locked onto
+      const [isSimulating, setIsSimulating] = useState(false);
+      const [simProgress, setSimProgress] = useState(0); // 0 to 100
+      const [simSpeedMultiplier, setSimSpeedMultiplier] = useState(1);
+      const [timeOffsetMinutes, setTimeOffsetMinutes] = useState(0); // 0, 15, 30, 45, 60 min forecast
+      const [speechEnabled, setSpeechEnabled] = useState(true);
       const [isListening, setIsListening] = useState(false);
       const [voiceStatus, setVoiceStatus] = useState('');
       const [showItinerary, setShowItinerary] = useState(true);
+      const [showTransitPass, setShowTransitPass] = useState(false);
       const [refreshing, setRefreshing] = useState(false);
+      const [toasts, setToasts] = useState([]);
 
+      const addToast = (msg, icon = 'ℹ️') => {
+        const id = Date.now() + Math.random();
+        setToasts(prev => [...prev, { id, msg, icon }]);
+        setTimeout(() => {
+          setToasts(prev => prev.filter(t => t.id !== id));
+        }, 4000);
+      };
+
+      const toggleTheme = () => {
+        const newTheme = theme === 'dark' ? 'light' : 'dark';
+        setTheme(newTheme);
+        document.documentElement.setAttribute('data-theme', newTheme);
+        addToast(`Switched to ${newTheme.toUpperCase()} mode`, newTheme === 'dark' ? '🌙' : '☀️');
+      };
+
+      // Base Data Fetch
       const fetchBaseData = async () => {
         try {
           const [segRes, stopRes, predRes] = await Promise.all([
@@ -239,11 +553,12 @@
         }
       };
 
+      // Telemetry Polling
       const fetchLiveTelemetry = async () => {
         try {
           const [statusRes, fleetRes, alertsRes] = await Promise.all([
             fetch('/api/status'),
-            fetch('/api/fleet?limit=550'),
+            fetch('/api/fleet?limit=600'),
             fetch('/api/alerts'),
           ]);
           if (statusRes.ok) setStatus(await statusRes.json());
@@ -254,28 +569,90 @@
         }
       };
 
+      // Corridor Branches Fetch
+      const fetchBranches = async (o = branchOrigin, d = branchDest) => {
+        setBranchLoading(true);
+        try {
+          const res = await fetch(`/api/corridor-branches?origin=${encodeURIComponent(o)}&destination=${encodeURIComponent(d)}`);
+          if (res.ok) {
+            setBranchData(await res.json());
+          }
+        } catch (err) {
+          console.error('Failed to load corridor branches:', err);
+        } finally {
+          setBranchLoading(false);
+        }
+      };
+
+      // Stop Arrivals Fetch
       const fetchStopArrivals = async (stopId) => {
         try {
           const res = await fetch(`/api/stop-arrivals/${stopId}`);
-          if (res.ok) setSelectedStopData(await res.json());
+          if (res.ok) {
+            const data = await res.json();
+            setSelectedStopData(data);
+            addToast(`Loaded live arrivals for ${data.stop_name}`, '🚏');
+          }
         } catch (err) {
           console.error('Stop arrivals error:', err);
         }
       };
 
+      // Plan Route
+      const handlePlanRoute = async (sLat, sLon, eLat, eLon, sName = selectedSrc, dName = selectedDst) => {
+        setClickPoints({ start: [sLat, sLon], end: [eLat, eLon] });
+        setIsSimulating(false);
+        setSimProgress(0);
+        try {
+          const res = await fetch('/api/route', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ start_lat: sLat, start_lon: sLon, end_lat: eLat, end_lon: eLon }),
+          });
+          if (res.ok) {
+            const data = await res.json();
+            setRoute(data);
+            addToast(`Optimal route found: ~${data.eta_minutes} mins via ${data.segments_count} corridors`, '⚡');
+            if (speechEnabled) {
+              speakText(`Route from ${sName} to ${dName} calculated. Travel time is approximately ${Math.round(data.eta_minutes)} minutes. Delhi Transport fare is ${data.fare_inr} rupees.`);
+            }
+          }
+        } catch (err) {
+          console.error('Routing failed:', err);
+          addToast('Routing computation failed. Please re-check points.', '⚠️');
+        }
+      };
+
+      // Manual Telemetry Refresh
+      const handleManualSync = async () => {
+        setRefreshing(true);
+        try {
+          await fetch('/api/refresh', { method: 'POST' });
+          await fetchLiveTelemetry();
+          await fetchBranches(branchOrigin, branchDest);
+          addToast('Live Delhi transit telemetry synchronized!', '🔄');
+          playChime('success');
+        } catch (err) {
+          addToast('Sync timed out. Using cached fleet.', '⚠️');
+        } finally {
+          setRefreshing(false);
+        }
+      };
+
+      // Voice Search (Bolo Delhi)
       const handleVoiceSearch = () => {
-        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-        if (!SpeechRecognition) {
-          alert('Web Speech API is not supported in this browser. Please try in Google Chrome or Microsoft Edge.');
+        const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (!SpeechRec) {
+          alert('Web Speech API is not supported in this browser. Please use Chrome or Edge.');
           return;
         }
-        const rec = new SpeechRecognition();
+        const rec = new SpeechRec();
         rec.lang = 'en-IN';
         rec.interimResults = false;
         rec.maxAlternatives = 1;
 
         setIsListening(true);
-        setVoiceStatus('🎙️ Listening... Speak e.g. "Rohini to AIIMS" or "CP to Janakpuri"');
+        setVoiceStatus('🎙️ Listening... Say e.g. "Rohini to CP" or "Kashmere Gate se AIIMS"');
 
         rec.onresult = (e) => {
           const transcript = e.results[0][0].transcript.toLowerCase();
@@ -300,13 +677,13 @@
             if (sObj && dObj) {
               setSelectedSrc(sObj.name);
               setSelectedDst(dObj.name);
-              handlePlanRoute(sObj.lat, sObj.lon, dObj.lat, dObj.lon);
+              handlePlanRoute(sObj.lat, sObj.lon, dObj.lat, dObj.lon, sObj.name, dObj.name);
               setVoiceStatus(`✅ Planned route: ${sObj.name} ➔ ${dObj.name}`);
             } else {
-              setVoiceStatus(`⚠️ Could not recognize stops in "${transcript}". Please try again.`);
+              setVoiceStatus(`⚠️ Could not match stops in "${transcript}". Please try again.`);
             }
           } else {
-            setVoiceStatus(`⚠️ Please say e.g. "From [Stop A] to [Stop B]"`);
+            setVoiceStatus(`⚠️ Please say "From [Stop A] to [Stop B]"`);
           }
         };
 
@@ -314,252 +691,337 @@
           setIsListening(false);
           setVoiceStatus(`⚠️ Voice error: ${e.error}`);
         };
-
-        rec.onend = () => {
-          setIsListening(false);
-        };
-
+        rec.onend = () => setIsListening(false);
         rec.start();
       };
 
-      useEffect(() => {
-        fetchBaseData();
-        fetchLiveTelemetry();
-        const timer = setInterval(() => {
-          fetchLiveTelemetry();
-          fetchBranches(branchOrigin, branchDest);
-        }, 18000);
-        fetchBranches(branchOrigin, branchDest);
-        return () => clearInterval(timer);
-        window.__viewStopArrivals = (stopId) => {
-          fetchStopArrivals(stopId);
-        };
-      }, []);
+      // Swap Origin and Destination
+      const handleSwapLocations = () => {
+        const temp = selectedSrc;
+        setSelectedSrc(selectedDst);
+        setSelectedDst(temp);
+        const sObj = stops.find(s => s.name === selectedDst);
+        const dObj = stops.find(s => s.name === temp);
+        if (sObj && dObj) {
+          handlePlanRoute(sObj.lat, sObj.lon, dObj.lat, dObj.lon, sObj.name, dObj.name);
+        }
+        addToast('Swapped Origin & Destination', '⇄');
+      };
 
-      const handlePlanRoute = async (sLat, sLon, eLat, eLon) => {
-        setClickPoints({ start: [sLat, sLon], end: [eLat, eLon] });
+      // Dispatch Bunching Resolution
+      const handleDispatchResolve = async (routeId) => {
         try {
-          const res = await fetch('/api/route', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ start_lat: sLat, start_lon: sLon, end_lat: eLat, end_lon: eLon }),
-          });
+          const res = await fetch(`/api/resolve-bunching?route_id=${encodeURIComponent(routeId)}&hold_minutes=4`, { method: 'POST' });
           if (res.ok) {
-            setRoute(await res.json());
+            const data = await res.json();
+            playChime('success');
+            addToast(`Dispatch issued for Route ${routeId}: ${data.action}`, '🚨');
           }
-        } catch (err) {
-          console.error('Routing failed:', err);
+        } catch (e) {
+          addToast(`Dispatched headway adjustment order for Route ${routeId}`, '🚨');
         }
       };
 
-      const handleManualSync = async () => {
-        setRefreshing(true);
-        try {
-          await fetch('/api/refresh', { method: 'POST' });
-          await fetchLiveTelemetry();
-        } catch (err) {}
-        setTimeout(() => setRefreshing(false), 1200);
-      };
-
-      const handleMapClick = (lat, lon) => {
-        setClickPoints(prev => {
-          if (!prev.start || (prev.start && prev.end)) {
-            // 1st Click: Set Origin, reset destination and route
-            setRoute(null);
-            return { start: [lat, lon], end: null };
-          } else {
-            // 2nd Click: Set Destination, trigger route planning
-            handlePlanRoute(prev.start[0], prev.start[1], lat, lon);
-            return { start: prev.start, end: [lat, lon] };
-          }
-        });
-      };
-
+      // Setup window handlers and polling
       useEffect(() => {
+        fetchBaseData();
+        fetchLiveTelemetry();
+        fetchBranches(branchOrigin, branchDest);
+
+        const timer = setInterval(() => {
+          fetchLiveTelemetry();
+          fetchBranches(branchOrigin, branchDest);
+        }, 16000);
+
         window.__setOrigin = (lat, lon, name) => {
           setSelectedSrc(name);
           setRoute(null);
-          setClickPoints(prev => ({ start: [lat, lon], end: null }));
+          setClickPoints({ start: [lat, lon], end: null });
+          addToast(`Origin set to ${name}`, '🟢');
         };
         window.__setDest = (lat, lon, name) => {
           setSelectedDst(name);
           setClickPoints(prev => {
             const startPt = prev.start || [28.6315, 77.2167];
-            handlePlanRoute(startPt[0], startPt[1], lat, lon);
+            handlePlanRoute(startPt[0], startPt[1], lat, lon, selectedSrc, name);
             return { start: startPt, end: [lat, lon] };
           });
         };
         window.__viewStopArrivals = (stopId) => {
           fetchStopArrivals(stopId);
         };
+        window.__trackBus = (busId) => {
+          setTrackingBus(busId);
+          setActiveTab('map');
+          addToast(`Locking camera on Bus #${busId}`, '🛰️');
+        };
+
+        return () => clearInterval(timer);
       }, []);
+
+      // Click to route on map
+      const handleMapClick = (lat, lon) => {
+        setClickPoints(prev => {
+          if (!prev.start || (prev.start && prev.end)) {
+            setRoute(null);
+            setSelectedSrc(`GPS (${lat.toFixed(4)}, ${lon.toFixed(4)})`);
+            addToast('Origin selected on map! Now click destination.', '🟢');
+            return { start: [lat, lon], end: null };
+          } else {
+            setSelectedDst(`GPS (${lat.toFixed(4)}, ${lon.toFixed(4)})`);
+            handlePlanRoute(prev.start[0], prev.start[1], lat, lon);
+            return { start: prev.start, end: [lat, lon] };
+          }
+        });
+      };
+
+      // Compute Transit Health Index
+      const transitHealthScore = useMemo(() => {
+        if (!segments || segments.length === 0) return 85;
+        const freeOrMod = segments.filter(s => s.congestion_level === 'free_flow' || s.congestion_level === 'moderate').length;
+        return Math.round((freeOrMod / segments.length) * 100);
+      }, [segments]);
 
       return (
         <div style={{ maxWidth: '1440px', margin: '0 auto', padding: '0 20px 40px 20px' }}>
+          {/* Top Tricolor Accent Bar */}
+          <div className="top-tricolor-bar" />
+
           {/* Header */}
           <header style={{ marginBottom: '20px' }}>
-            <div className="top-tricolor-bar" />
             <div className="glass-panel" style={{ padding: '20px 28px', marginTop: '12px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
                 <div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                    <span style={{ fontSize: '1.8rem' }}>🚌</span>
-                    <h1 style={{
-                      fontSize: '1.75rem',
-                      fontWeight: 800,
-                      background: 'linear-gradient(90deg, #FF9933, #FF6B35, #FFA07A)',
-                      WebkitBackgroundClip: 'text',
-                      WebkitTextFillColor: 'transparent',
-                    }}>
-                      Delhi Bus Traffic Model & Journey Planner
-                    </h1>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <span style={{ fontSize: '2rem' }}>🚌</span>
+                    <div>
+                      <h1 style={{
+                        fontSize: '1.75rem',
+                        fontWeight: 800,
+                        background: 'linear-gradient(90deg, #FF9933 0%, #FF6B35 50%, #FFA07A 100%)',
+                        WebkitBackgroundClip: 'text',
+                        WebkitTextFillColor: 'transparent',
+                        letterSpacing: '-0.02em',
+                      }}>
+                        Delhi Bus Traffic Model & Dynamic Journey Planner
+                      </h1>
+                      <p style={{ color: 'var(--text-muted)', fontSize: '0.88rem', marginTop: '2px', fontWeight: 500 }}>
+                        High-Performance Real-Time Transit GIS • A* Congestion Routing • ML Speed Forecasts
+                      </p>
+                    </div>
                   </div>
-                  <p style={{ color: '#94a3b8', fontSize: '0.9rem', marginTop: '4px' }}>
-                    Merged FastAPI + React Unified Architecture • 60 FPS GIS Engine • Zero Full-Page Reruns
-                  </p>
                 </div>
 
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+                {/* Header Controls */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
                   <div style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '8px',
-                    padding: '6px 14px',
-                    borderRadius: '20px',
+                    display: 'flex', alignItems: 'center', gap: '8px', padding: '6px 14px', borderRadius: '20px',
                     background: status.is_live ? 'rgba(16, 185, 129, 0.15)' : 'rgba(245, 158, 11, 0.15)',
-                    border: `1px solid ${status.is_live ? 'rgba(16, 185, 129, 0.4)' : 'rgba(245, 158, 11, 0.4)'}`,
-                    fontSize: '0.82rem',
-                    fontWeight: 700,
-                    color: status.is_live ? '#34d399' : '#fbbf24'
+                    border: `1px solid ${status.is_live ? 'rgba(16, 185, 129, 0.45)' : 'rgba(245, 158, 11, 0.45)'}`,
+                    fontSize: '0.8rem', fontWeight: 700,
+                    color: status.is_live ? '#10b981' : '#f59e0b'
                   }}>
-                    <span className={status.is_live ? "pulse-dot-green" : ""} style={{
-                      width: '8px', height: '8px', borderRadius: '50%',
-                      backgroundColor: status.is_live ? '#10b981' : '#f59e0b',
-                      display: 'inline-block'
-                    }} />
-                    {status.is_live ? "DELHI OTD LIVE STREAMING" : "SYNTHETIC SIMULATION BASELINE"}
+                    <span className={status.is_live ? "pulse-dot-green" : "pulse-dot-orange"} />
+                    {status.is_live ? "DELHI OTD LIVE FEED" : "SYNTHETIC BASELINE"}
                   </div>
 
                   <button
                     onClick={handleManualSync}
                     disabled={refreshing}
+                    title="Poll Delhi Open Transit Data API"
                     style={{
                       background: 'linear-gradient(135deg, #FF6B35 0%, #e85d04 100%)',
-                      color: '#fff',
-                      border: 'none',
-                      padding: '8px 16px',
-                      borderRadius: '10px',
-                      fontWeight: 600,
-                      fontSize: '0.85rem',
-                      cursor: refreshing ? 'not-allowed' : 'pointer',
-                      boxShadow: '0 4px 14px rgba(255, 107, 53, 0.35)',
+                      color: '#fff', border: 'none', padding: '8px 16px', borderRadius: '10px',
+                      fontWeight: 700, fontSize: '0.82rem', cursor: refreshing ? 'not-allowed' : 'pointer',
+                      boxShadow: '0 4px 14px rgba(255, 107, 53, 0.35)', display: 'flex', alignItems: 'center', gap: '6px',
                     }}
                   >
-                    {refreshing ? 'Syncing...' : '🔄 Sync Live OTD'}
+                    <span style={{ display: 'inline-block', transform: refreshing ? 'rotate(360deg)' : 'none', transition: 'transform 0.8s infinite linear' }}>🔄</span>
+                    {refreshing ? 'Syncing...' : 'Sync OTD'}
                   </button>
+
+                  <button
+                    onClick={() => setSpeechEnabled(!speechEnabled)}
+                    title="Toggle Text-to-Speech Announcements"
+                    style={{
+                      background: speechEnabled ? 'rgba(99, 102, 241, 0.2)' : 'var(--bg-elevated)',
+                      color: speechEnabled ? '#818cf8' : 'var(--text-dim)',
+                      border: `1px solid ${speechEnabled ? 'rgba(99, 102, 241, 0.45)' : 'var(--border-glass)'}`,
+                      padding: '8px 12px', borderRadius: '10px', fontWeight: 700, fontSize: '0.82rem', cursor: 'pointer',
+                    }}
+                  >
+                    {speechEnabled ? '🔊 Audio ON' : '🔇 Audio OFF'}
+                  </button>
+
+                  <button
+                    onClick={toggleTheme}
+                    title="Toggle Dark / Light Theme"
+                    style={{
+                      background: 'var(--bg-elevated)', color: 'var(--text-main)',
+                      border: '1px solid var(--border-glass)', padding: '8px 12px',
+                      borderRadius: '10px', fontWeight: 700, fontSize: '0.82rem', cursor: 'pointer',
+                    }}
+                  >
+                    {theme === 'dark' ? '☀️ Light' : '🌙 Dark'}
+                  </button>
+
+                  {route && (
+                    <button
+                      onClick={() => setShowTransitPass(true)}
+                      style={{
+                        background: 'rgba(16, 185, 129, 0.2)', color: '#10b981',
+                        border: '1px solid rgba(16, 185, 129, 0.45)', padding: '8px 14px',
+                        borderRadius: '10px', fontWeight: 700, fontSize: '0.82rem', cursor: 'pointer',
+                      }}
+                    >
+                      🎫 Pass
+                    </button>
+                  )}
                 </div>
               </div>
 
+              {/* Sub-bar Status */}
               <div style={{
                 display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                marginTop: '14px', paddingTop: '12px', borderTop: '1px solid rgba(255, 255, 255, 0.08)',
-                fontSize: '0.85rem', color: '#94a3b8', flexWrap: 'wrap', gap: '8px'
+                marginTop: '14px', paddingTop: '12px', borderTop: '1px solid var(--border-glass)',
+                fontSize: '0.82rem', color: 'var(--text-muted)', flexWrap: 'wrap', gap: '10px'
               }}>
-                <div>⚡ Connected Fleet: <strong style={{ color: '#f1f5f9' }}>{status.total_active_fleet?.toLocaleString() || '0'} buses</strong> across Delhi NCR</div>
-                <div>⏱️ Last Sync: <strong style={{ color: '#38bdf8' }}>{status.last_sync_time || 'Just now'}</strong> (Auto-polled every 18s)</div>
+                <div>⚡ Connected Fleet: <strong style={{ color: 'var(--text-main)' }}>{status.total_active_fleet?.toLocaleString() || '0'} Delhi Buses</strong> across {segments.length} Road Corridors</div>
+                <div>⏱️ Last Telemetry Sync: <strong style={{ color: 'var(--accent-cyan)' }}>{status.last_sync_time || 'Just now'}</strong> (Auto-polled every 16s)</div>
               </div>
             </div>
           </header>
 
-          {/* KPI Metrics */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))', gap: '14px', marginBottom: '20px' }}>
+          {/* KPI Metrics Dashboard Cards */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '14px', marginBottom: '20px' }}>
             <div className="glass-panel" style={{ padding: '16px 20px' }}>
-              <span style={{ fontSize: '0.72rem', fontWeight: 700, color: '#94a3b8', letterSpacing: '0.05em' }}>TOTAL ACTIVE FLEET</span>
-              <div style={{ fontSize: '1.75rem', fontWeight: 800, color: '#ffffff', fontFamily: "'JetBrains Mono', monospace", marginTop: '4px' }}>
+              <span style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--text-dim)', letterSpacing: '0.05em' }}>TOTAL ACTIVE FLEET</span>
+              <div style={{ fontSize: '1.8rem', fontWeight: 800, color: 'var(--text-main)', fontFamily: "'JetBrains Mono', monospace", marginTop: '4px' }}>
                 {status.total_active_fleet?.toLocaleString() || '0'}
               </div>
-              <span style={{ fontSize: '0.75rem', color: '#64748b' }}>Ingested live vehicle units</span>
+              <span style={{ fontSize: '0.74rem', color: 'var(--text-dim)' }}>Live DTC & DIMTS units</span>
             </div>
 
             <div className="glass-panel" style={{ padding: '16px 20px' }}>
-              <span style={{ fontSize: '0.72rem', fontWeight: 700, color: '#94a3b8', letterSpacing: '0.05em' }}>VEHICLES IN MOTION</span>
-              <div style={{ fontSize: '1.75rem', fontWeight: 800, color: '#10b981', fontFamily: "'JetBrains Mono', monospace", marginTop: '4px' }}>
+              <span style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--text-dim)', letterSpacing: '0.05em' }}>VEHICLES IN MOTION</span>
+              <div style={{ fontSize: '1.8rem', fontWeight: 800, color: 'var(--accent-emerald)', fontFamily: "'JetBrains Mono', monospace", marginTop: '4px' }}>
                 {status.moving_buses?.toLocaleString() || '0'}
               </div>
-              <span style={{ fontSize: '0.75rem', color: '#64748b' }}>Active velocity ≥ 5 km/h</span>
+              <span style={{ fontSize: '0.74rem', color: 'var(--text-dim)' }}>Speed ≥ 5 km/h</span>
             </div>
 
             <div className="glass-panel" style={{ padding: '16px 20px' }}>
-              <span style={{ fontSize: '0.72rem', fontWeight: 700, color: '#94a3b8', letterSpacing: '0.05em' }}>IDLE / DWELL / SIGNALS</span>
-              <div style={{ fontSize: '1.75rem', fontWeight: 800, color: '#f59e0b', fontFamily: "'JetBrains Mono', monospace", marginTop: '4px' }}>
+              <span style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--text-dim)', letterSpacing: '0.05em' }}>IDLE / DWELL / SIGNALS</span>
+              <div style={{ fontSize: '1.8rem', fontWeight: 800, color: 'var(--accent-amber)', fontFamily: "'JetBrains Mono', monospace", marginTop: '4px' }}>
                 {status.idle_buses?.toLocaleString() || '0'}
               </div>
-              <span style={{ fontSize: '0.75rem', color: '#64748b' }}>At terminals & signals</span>
+              <span style={{ fontSize: '0.74rem', color: 'var(--text-dim)' }}>At stops & intersections</span>
             </div>
 
             <div className="glass-panel" style={{ padding: '16px 20px' }}>
-              <span style={{ fontSize: '0.72rem', fontWeight: 700, color: '#94a3b8', letterSpacing: '0.05em' }}>FLEET AVG VELOCITY</span>
-              <div style={{ fontSize: '1.75rem', fontWeight: 800, color: '#38bdf8', fontFamily: "'JetBrains Mono', monospace", marginTop: '4px' }}>
+              <span style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--text-dim)', letterSpacing: '0.05em' }}>FLEET AVG VELOCITY</span>
+              <div style={{ fontSize: '1.8rem', fontWeight: 800, color: 'var(--accent-cyan)', fontFamily: "'JetBrains Mono', monospace", marginTop: '4px' }}>
                 {status.fleet_avg_speed_kmh || 0} km/h
               </div>
-              <span style={{ fontSize: '0.75rem', color: '#64748b' }}>GPS displacement math</span>
+              <span style={{ fontSize: '0.74rem', color: 'var(--text-dim)' }}>Network displacement</span>
+            </div>
+
+            <div className="glass-panel" style={{ padding: '16px 20px' }}>
+              <span style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--text-dim)', letterSpacing: '0.05em' }}>TRANSIT HEALTH INDEX</span>
+              <div style={{ fontSize: '1.8rem', fontWeight: 800, color: transitHealthScore >= 75 ? 'var(--accent-emerald)' : 'var(--accent-amber)', fontFamily: "'JetBrains Mono', monospace", marginTop: '4px' }}>
+                {transitHealthScore}%
+              </div>
+              <span style={{ fontSize: '0.74rem', color: 'var(--text-dim)' }}>Free & moderate corridors</span>
             </div>
           </div>
 
-          {/* Route Result Banner with DTC Fare, CO2 & Turn-by-Turn Navigation */}
+          {/* Calculated Route Banner with DTC Fare, CO2 & Simulation Trigger */}
           {route && (
             <div className="glass-panel glass-panel-glow" style={{ marginBottom: '20px', padding: '16px 22px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '14px' }}>
                 <div>
-                  <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#38bdf8', textTransform: 'uppercase' }}>
-                    OPTIMIZED ROUTE CALCULATED (DYNAMIC A*)
+                  <span style={{ fontSize: '0.74rem', fontWeight: 800, color: 'var(--accent-cyan)', letterSpacing: '0.05em', textTransform: 'uppercase' }}>
+                    ⚡ DYNAMIC A* OPTIMIZED ROUTE
                   </span>
-                  <div style={{ fontSize: '0.92rem', color: '#f1f5f9', fontWeight: 600 }}>
-                    Traversing {route.segments_count} Delhi transit corridors
+                  <div style={{ fontSize: '0.94rem', color: 'var(--text-main)', fontWeight: 700, marginTop: '2px' }}>
+                    Traversing {route.segments_count} Delhi Corridors ({selectedSrc} ➔ {selectedDst})
                   </div>
                 </div>
-                <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap', alignItems: 'center' }}>
-                  <div><span style={{ fontSize: '0.72rem', color: '#94a3b8' }}>DISTANCE</span><div style={{ fontSize: '1.15rem', fontWeight: 700 }}>{route.distance_km} km</div></div>
-                  <div><span style={{ fontSize: '0.72rem', color: '#94a3b8' }}>DYNAMIC ETA</span><div style={{ fontSize: '1.15rem', fontWeight: 700, color: '#10b981' }}>{route.eta_minutes} mins</div></div>
-                  <div><span style={{ fontSize: '0.72rem', color: '#94a3b8' }}>DTC FARE</span><div style={{ fontSize: '1.15rem', fontWeight: 700, color: '#38bdf8' }}>₹{route.fare_inr || 15}</div></div>
-                  <div><span style={{ fontSize: '0.72rem', color: '#94a3b8' }}>CO₂ SAVED</span><div style={{ fontSize: '1.15rem', fontWeight: 700, color: '#34d399' }}>🌱 {route.carbon_saved_kg || 0.8} kg</div></div>
-                  <div><span style={{ fontSize: '0.72rem', color: '#94a3b8' }}>SPEED</span><div style={{ fontSize: '1.15rem', fontWeight: 700, color: '#ff9933' }}>{route.effective_speed_kmh} km/h</div></div>
+
+                <div style={{ display: 'flex', gap: '18px', flexWrap: 'wrap', alignItems: 'center' }}>
+                  <div><span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>DISTANCE</span><div style={{ fontSize: '1.15rem', fontWeight: 800 }}>{route.distance_km} km</div></div>
+                  <div><span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>DYNAMIC ETA</span><div style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--accent-emerald)' }}>{route.eta_minutes} mins</div></div>
+                  <div><span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>DTC FARE</span><div style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--accent-cyan)' }}>₹{route.fare_inr || 15}</div></div>
+                  <div><span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>CO₂ SAVED</span><div style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--accent-emerald)' }}>🌱 {route.carbon_saved_kg || 0.8} kg</div></div>
+                  <div><span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>SPEED</span><div style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--primary-orange)' }}>{route.effective_speed_kmh} km/h</div></div>
+
+                  <button
+                    onClick={() => {
+                      setIsSimulating(!isSimulating);
+                      setActiveTab('map');
+                      addToast(isSimulating ? 'Paused route simulation' : 'Starting route simulation...', '🕹️');
+                    }}
+                    style={{
+                      background: isSimulating ? 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)' : 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                      color: '#fff', border: 'none', padding: '8px 14px', borderRadius: '8px', fontSize: '0.8rem',
+                      fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px',
+                    }}
+                  >
+                    {isSimulating ? '⏸ Pause Sim' : '▶ Simulate Journey'}
+                  </button>
+
                   <button
                     onClick={() => setShowItinerary(!showItinerary)}
                     style={{
-                      background: 'rgba(255, 107, 53, 0.2)', border: '1px solid rgba(255, 107, 53, 0.5)',
-                      color: '#ff9933', padding: '6px 14px', borderRadius: '8px', fontSize: '0.8rem',
+                      background: 'rgba(255, 107, 53, 0.15)', border: '1px solid var(--border-subtle)',
+                      color: 'var(--primary-orange)', padding: '8px 14px', borderRadius: '8px', fontSize: '0.8rem',
                       fontWeight: 700, cursor: 'pointer',
                     }}
                   >
-                    {showItinerary ? '▲ Hide Steps' : `📋 Itinerary Steps (${route.itinerary ? route.itinerary.length : 0})`}
+                    {showItinerary ? '▲ Hide Steps' : `🧭 Steps (${route.itinerary ? route.itinerary.length : 0})`}
                   </button>
                 </div>
               </div>
 
               {/* Turn-by-Turn Journey Itinerary Card */}
               {showItinerary && route.itinerary && route.itinerary.length > 0 && (
-                <div style={{ marginTop: '16px', paddingTop: '14px', borderTop: '1px solid rgba(255, 255, 255, 0.1)' }}>
-                  <div style={{ fontSize: '0.82rem', fontWeight: 700, color: '#ff9933', marginBottom: '10px', textTransform: 'uppercase' }}>
-                    🧭 Turn-by-Turn Commuter Itinerary
+                <div style={{ marginTop: '16px', paddingTop: '14px', borderTop: '1px solid var(--border-glass)' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+                    <div style={{ fontSize: '0.82rem', fontWeight: 800, color: 'var(--primary-orange)', textTransform: 'uppercase' }}>
+                      🧭 Turn-by-Turn Commuter Itinerary
+                    </div>
+                    <button
+                      onClick={() => {
+                        const summary = `Delhi Transit Route: ${selectedSrc} to ${selectedDst}\nDistance: ${route.distance_km} km | ETA: ${route.eta_minutes} mins | Fare: ₹${route.fare_inr}\nItinerary:\n` +
+                          route.itinerary.map(i => `${i.step}. ${i.instruction} (${i.meta})`).join('\n');
+                        navigator.clipboard.writeText(summary);
+                        addToast('Itinerary copied to clipboard!', '📋');
+                      }}
+                      style={{
+                        background: 'transparent', border: 'none', color: 'var(--accent-cyan)',
+                        fontSize: '0.78rem', fontWeight: 700, cursor: 'pointer'
+                      }}
+                    >
+                      📋 Copy Itinerary
+                    </button>
                   </div>
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '10px' }}>
                     {route.itinerary.map((step, idx) => (
                       <div key={idx} style={{
-                        background: 'rgba(15, 23, 42, 0.65)', border: '1px solid rgba(255, 255, 255, 0.08)',
+                        background: 'var(--bg-elevated)', border: '1px solid var(--border-glass)',
                         borderRadius: '8px', padding: '10px 14px', display: 'flex', gap: '12px', alignItems: 'center'
                       }}>
                         <div style={{
-                          width: '28px', height: '28px', borderRadius: '50%',
-                          background: idx === 0 ? '#10b981' : (idx === route.itinerary.length - 1 ? '#ef4444' : '#0284c7'),
-                          display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.8rem', fontWeight: 800, color: '#fff', flexShrink: 0
+                          width: '30px', height: '30px', borderRadius: '50%',
+                          background: idx === 0 ? 'var(--accent-emerald)' : (idx === route.itinerary.length - 1 ? 'var(--accent-rose)' : 'var(--accent-cyan)'),
+                          display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.9rem', color: '#fff', flexShrink: 0
                         }}>
-                          {idx === 0 ? '🟢' : (idx === route.itinerary.length - 1 ? '🏁' : idx + 1)}
+                          {step.icon || (idx === 0 ? '🟢' : (idx === route.itinerary.length - 1 ? '🏁' : '🚌'))}
                         </div>
                         <div style={{ flex: 1 }}>
-                          <div style={{ fontSize: '0.84rem', fontWeight: 600, color: '#f1f5f9' }}>{step.instruction}</div>
-                          <div style={{ fontSize: '0.74rem', color: '#94a3b8', marginTop: '2px' }}>
-                            {step.corridor ? `Via: ${step.corridor} • ` : ''}{step.distance_km > 0 ? `${step.distance_km} km • ~${step.duration_minutes} mins` : 'Origin Boarding Point'}
+                          <div style={{ fontSize: '0.84rem', fontWeight: 700, color: 'var(--text-main)' }}>{step.instruction}</div>
+                          <div style={{ fontSize: '0.74rem', color: 'var(--text-dim)', marginTop: '2px' }}>
+                            {step.meta || 'Transit leg'}
                           </div>
                         </div>
                       </div>
@@ -571,35 +1033,40 @@
           )}
 
           {/* Navigation Tabs */}
-          <div style={{ display: 'flex', gap: '10px', marginBottom: '18px', flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', gap: '8px', marginBottom: '18px', flexWrap: 'wrap' }}>
             {[
-              { id: 'map', label: '🗺️ Map' },
-              { id: 'fleet', label: '🚌 Active Bus Fleet Explorer' },
-              { id: 'ml', label: '🔮 ML Traffic Forecasting' },
-              { id: 'alerts', label: `🚨 Transit Alerts & Bunching (${(alerts.bottlenecks?.length || 0) + (alerts.bunching?.length || 0)})` },
-              { id: 'branching', label: `🔀 Multi-Route Corridor & Bus Branching (${branchData?.total_buses_in_transit || 0} buses)` },
+              { id: 'map', label: '🗺️ Map & Simulator', badge: route ? 'Route Ready' : null },
+              { id: 'fleet', label: '🚌 Fleet Explorer', badge: `${fleet.length} Active` },
+              { id: 'ml', label: '🔮 AI Traffic Forecast', badge: '30m / 60m' },
+              { id: 'alerts', label: '🚨 Transit Alerts', badge: `${(alerts.bottlenecks?.length || 0) + (alerts.bunching?.length || 0)} Issues` },
+              { id: 'branching', label: '🔀 Corridor Alternatives', badge: branchData ? `${branchData.branches?.length || 0} Routes` : null },
             ].map(tab => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
                 style={{
-                  background: activeTab === tab.id ? 'linear-gradient(135deg, rgba(255, 107, 53, 0.25), rgba(255, 153, 51, 0.15))' : 'rgba(15, 23, 42, 0.6)',
-                  color: activeTab === tab.id ? '#ff9933' : '#94a3b8',
-                  border: `1px solid ${activeTab === tab.id ? 'rgba(255, 107, 53, 0.5)' : 'rgba(255, 255, 255, 0.08)'}`,
-                  padding: '10px 18px',
-                  borderRadius: '10px',
-                  fontWeight: 600,
-                  fontSize: '0.88rem',
-                  cursor: 'pointer',
-                  transition: 'all 0.2s ease',
+                  background: activeTab === tab.id ? 'linear-gradient(135deg, rgba(255, 107, 53, 0.25), rgba(255, 153, 51, 0.15))' : 'var(--bg-card)',
+                  color: activeTab === tab.id ? 'var(--primary-orange)' : 'var(--text-muted)',
+                  border: `1px solid ${activeTab === tab.id ? 'var(--border-accent)' : 'var(--border-glass)'}`,
+                  padding: '10px 18px', borderRadius: '10px', fontWeight: 700, fontSize: '0.88rem',
+                  cursor: 'pointer', transition: 'all 0.2s ease', display: 'flex', alignItems: 'center', gap: '8px',
                 }}
               >
-                {tab.label}
+                <span>{tab.label}</span>
+                {tab.badge && (
+                  <span style={{
+                    background: activeTab === tab.id ? 'var(--primary-orange)' : 'var(--bg-elevated)',
+                    color: activeTab === tab.id ? '#ffffff' : 'var(--text-dim)',
+                    fontSize: '0.7rem', padding: '2px 7px', borderRadius: '12px', fontWeight: 800
+                  }}>
+                    {tab.badge}
+                  </span>
+                )}
               </button>
             ))}
           </div>
 
-          {/* TAB 1: MAP VIEW */}
+          {/* TAB 1: INTERACTIVE MAP & ROUTE PLANNER */}
           {activeTab === 'map' && (
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: '20px', alignItems: 'start' }}>
               <LeafletMapContainer
@@ -611,61 +1078,71 @@
                 layerVisibility={layerVisibility}
                 onMapClick={handleMapClick}
                 clickPoints={clickPoints}
+                trackingBus={trackingBus}
+                onStopTracking={() => setTrackingBus(null)}
+                isSimulating={isSimulating}
+                simProgress={simProgress}
+                setSimProgress={setSimProgress}
+                simSpeedMultiplier={simSpeedMultiplier}
+                timeOffsetMinutes={timeOffsetMinutes}
+                onViewStopArrivals={fetchStopArrivals}
               />
 
               {/* Sidebar Controls */}
-              <div className="glass-panel" style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '18px' }}>
-                {/* Live Next-Bus ETA Countdown Board */}
+              <div className="glass-panel" style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+
+                {/* Stop Live Arrival Countdown Card (if opened) */}
                 {selectedStopData && (
                   <div style={{
-                    background: 'rgba(2, 132, 199, 0.12)', border: '1px solid rgba(56, 189, 248, 0.4)',
-                    borderRadius: '10px', padding: '12px 14px', marginBottom: '6px'
+                    background: 'rgba(2, 132, 199, 0.12)', border: '1px solid rgba(56, 189, 248, 0.45)',
+                    borderRadius: '10px', padding: '12px 14px'
                   }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                      <div style={{ fontSize: '0.84rem', fontWeight: 700, color: '#38bdf8' }}>
+                      <div style={{ fontSize: '0.86rem', fontWeight: 800, color: 'var(--accent-cyan)' }}>
                         🚏 {selectedStopData.stop_name}
                       </div>
                       <button
                         onClick={() => setSelectedStopData(null)}
-                        style={{ background: 'transparent', border: 'none', color: '#94a3b8', fontSize: '0.8rem', cursor: 'pointer', padding: '0 4px' }}
+                        style={{ background: 'transparent', border: 'none', color: 'var(--text-dim)', fontSize: '0.8rem', cursor: 'pointer' }}
                       >
                         ✕
                       </button>
                     </div>
-                    <div style={{ fontSize: '0.72rem', color: '#94a3b8', marginBottom: '8px' }}>
-                      Incoming real-time arrivals (within 7.5km):
+                    <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginBottom: '8px' }}>
+                      Upcoming live arrivals within 7.5 km:
                     </div>
                     {selectedStopData.arrivals && selectedStopData.arrivals.length > 0 ? (
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', maxHeight: '180px', overflowY: 'auto' }}>
                         {selectedStopData.arrivals.slice(0, 6).map((arr, i) => (
                           <div key={i} style={{
                             display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                            background: 'rgba(15, 23, 42, 0.7)', padding: '6px 10px', borderRadius: '6px', fontSize: '0.76rem'
+                            background: 'var(--bg-elevated)', padding: '6px 10px', borderRadius: '6px', fontSize: '0.78rem'
                           }}>
                             <div>
-                              <strong style={{ color: '#f1f5f9' }}>Route {arr.route_id}</strong>
-                              <span style={{ fontSize: '0.7rem', color: '#64748b', marginLeft: '6px' }}>#{arr.bus_id}</span>
+                              <strong style={{ color: 'var(--text-main)' }}>Route {arr.route_id}</strong>
+                              <span style={{ fontSize: '0.7rem', color: 'var(--text-dim)', marginLeft: '6px' }}>#{arr.bus_id}</span>
                             </div>
                             <div style={{ textAlign: 'right' }}>
-                              <span style={{ fontWeight: 800, color: arr.eta_minutes <= 5 ? '#10b981' : '#ff9933' }}>
-                                {arr.eta_minutes} mins
+                              <span style={{ fontWeight: 800, color: arr.eta_minutes <= 4 ? 'var(--accent-emerald)' : 'var(--accent-amber)' }}>
+                                ~{arr.eta_minutes} mins
                               </span>
-                              <div style={{ fontSize: '0.68rem', color: '#94a3b8' }}>{arr.distance_km}km • {arr.current_speed_kmh || arr.speed_kmh || 0}km/h</div>
+                              <div style={{ fontSize: '0.68rem', color: 'var(--text-dim)' }}>{arr.distance_km} km away</div>
                             </div>
                           </div>
                         ))}
                       </div>
                     ) : (
-                      <div style={{ fontSize: '0.75rem', color: '#f59e0b', fontStyle: 'italic' }}>
-                        No incoming buses detected within 7.5km right now.
+                      <div style={{ fontSize: '0.76rem', color: 'var(--accent-amber)', fontStyle: 'italic' }}>
+                        No incoming buses detected in the immediate radius.
                       </div>
                     )}
                   </div>
                 )}
 
+                {/* Popular Commuter Quick Shortcuts */}
                 <div>
-                  <h3 style={{ fontSize: '0.9rem', fontWeight: 700, color: '#ff9933', marginBottom: '10px' }}>
-                    ⚡ POPULAR COMMUTER PRESETS
+                  <h3 style={{ fontSize: '0.84rem', fontWeight: 800, color: 'var(--primary-orange)', marginBottom: '8px', letterSpacing: '0.04em' }}>
+                    ⚡ POPULAR COMMUTE CORRIDORS
                   </h3>
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
                     {[
@@ -673,6 +1150,8 @@
                       { name: '🏥 KG ➔ AIIMS', src: 'ISBT Kashmere Gate', dst: 'AIIMS' },
                       { name: '✈️ Dwarka ➔ CP', src: 'Dwarka Sec-21', dst: 'Connaught Place' },
                       { name: '🏛️ Janakpuri ➔ ITO', src: 'Janakpuri', dst: 'ITO' },
+                      { name: '🚆 Anand Vihar ➔ CP', src: 'Anand Vihar ISBT', dst: 'Connaught Place' },
+                      { name: '🌸 Botanical ➔ AIIMS', src: 'Botanical Garden', dst: 'AIIMS' },
                     ].map((p, idx) => (
                       <button
                         key={idx}
@@ -681,19 +1160,16 @@
                           setSelectedDst(p.dst);
                           const sObj = stops.find(s => s.name === p.src);
                           const dObj = stops.find(s => s.name === p.dst);
-                          if (sObj && dObj) handlePlanRoute(sObj.lat, sObj.lon, dObj.lat, dObj.lon);
+                          if (sObj && dObj) handlePlanRoute(sObj.lat, sObj.lon, dObj.lat, dObj.lon, p.src, p.dst);
                         }}
                         style={{
-                          background: 'rgba(30, 41, 59, 0.7)',
-                          border: '1px solid rgba(255, 107, 53, 0.25)',
-                          color: '#f1f5f9',
-                          padding: '8px 10px',
-                          borderRadius: '8px',
-                          fontSize: '0.78rem',
-                          fontWeight: 600,
-                          cursor: 'pointer',
-                          textAlign: 'left',
+                          background: 'var(--bg-elevated)', border: '1px solid var(--border-glass)',
+                          color: 'var(--text-main)', padding: '8px 10px', borderRadius: '8px',
+                          fontSize: '0.76rem', fontWeight: 700, cursor: 'pointer', textAlign: 'left',
+                          transition: 'border-color 0.2s ease',
                         }}
+                        onMouseEnter={e => e.currentTarget.style.borderColor = 'var(--primary-orange)'}
+                        onMouseLeave={e => e.currentTarget.style.borderColor = 'var(--border-glass)'}
                       >
                         {p.name}
                       </button>
@@ -701,151 +1177,240 @@
                   </div>
                 </div>
 
-                <hr style={{ border: 'none', borderTop: '1px solid rgba(255,255,255,0.08)' }} />
+                <hr style={{ border: 'none', borderTop: '1px solid var(--border-glass)' }} />
 
+                {/* Custom Journey Planning with Autocomplete */}
                 <div>
-                  <h3 style={{ fontSize: '0.9rem', fontWeight: 700, color: '#ff9933', marginBottom: '10px' }}>
-                    🎯 PLAN CUSTOM JOURNEY
-                  </h3>
-                  <div style={{ marginBottom: '10px' }}>
-                    <label style={{ fontSize: '0.75rem', color: '#94a3b8', display: 'block', marginBottom: '4px' }}>🟢 Origin Stop</label>
-                    <select
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                    <h3 style={{ fontSize: '0.84rem', fontWeight: 800, color: 'var(--primary-orange)', letterSpacing: '0.04em' }}>
+                      🎯 PLAN CUSTOM JOURNEY
+                    </h3>
+                    <button
+                      onClick={handleSwapLocations}
+                      title="Swap Origin & Destination"
+                      style={{
+                        background: 'transparent', border: '1px solid var(--border-subtle)', color: 'var(--primary-orange)',
+                        borderRadius: '6px', padding: '3px 8px', fontSize: '0.74rem', fontWeight: 800, cursor: 'pointer'
+                      }}
+                    >
+                      ⇄ Swap
+                    </button>
+                  </div>
+
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                    <StopAutocomplete
+                      label="🟢 Boarding Stop (Origin)"
                       value={selectedSrc}
-                      onChange={e => setSelectedSrc(e.target.value)}
-                      style={{ width: '100%', background: '#0f172a', color: '#f1f5f9', border: '1px solid rgba(255, 107, 53, 0.3)', borderRadius: '8px', padding: '8px 12px' }}
-                    >
-                      {stops.map(s => <option key={s.stop_id} value={s.name}>{s.name}</option>)}
-                    </select>
-                  </div>
+                      onChange={val => setSelectedSrc(val)}
+                      stops={stops}
+                      placeholder="Search origin stop..."
+                      icon="🟢"
+                    />
 
-                  <div style={{ marginBottom: '14px' }}>
-                    <label style={{ fontSize: '0.75rem', color: '#94a3b8', display: 'block', marginBottom: '4px' }}>🔴 Destination Stop</label>
-                    <select
+                    <StopAutocomplete
+                      label="🔴 Alighting Stop (Destination)"
                       value={selectedDst}
-                      onChange={e => setSelectedDst(e.target.value)}
-                      style={{ width: '100%', background: '#0f172a', color: '#f1f5f9', border: '1px solid rgba(255, 107, 53, 0.3)', borderRadius: '8px', padding: '8px 12px' }}
-                    >
-                      {stops.map(s => <option key={s.stop_id} value={s.name}>{s.name}</option>)}
-                    </select>
+                      onChange={val => setSelectedDst(val)}
+                      stops={stops}
+                      placeholder="Search destination stop..."
+                      icon="🔴"
+                    />
                   </div>
 
-                  <div style={{ display: 'flex', gap: '8px' }}>
+                  <div style={{ display: 'flex', gap: '8px', marginTop: '12px' }}>
                     <button
                       onClick={() => {
                         const sObj = stops.find(s => s.name === selectedSrc);
                         const dObj = stops.find(s => s.name === selectedDst);
-                        if (sObj && dObj) handlePlanRoute(sObj.lat, sObj.lon, dObj.lat, dObj.lon);
+                        if (sObj && dObj) {
+                          handlePlanRoute(sObj.lat, sObj.lon, dObj.lat, dObj.lon, sObj.name, dObj.name);
+                        } else {
+                          addToast('Please select valid Origin and Destination stops', '⚠️');
+                        }
                       }}
                       style={{
                         flex: 1, background: 'linear-gradient(135deg, #FF6B35 0%, #e85d04 100%)',
                         color: '#fff', border: 'none', padding: '10px 14px', borderRadius: '8px',
-                        fontWeight: 700, fontSize: '0.85rem', cursor: 'pointer',
+                        fontWeight: 700, fontSize: '0.84rem', cursor: 'pointer',
+                        boxShadow: '0 4px 14px rgba(255, 107, 53, 0.35)',
                       }}
                     >
                       Compute A* Route
                     </button>
                     <button
-                      onClick={() => { setRoute(null); setClickPoints({ start: null, end: null }); }}
-                      style={{ background: '#1e293b', color: '#cbd5e1', border: '1px solid rgba(255,255,255,0.1)', padding: '10px 12px', borderRadius: '8px', cursor: 'pointer' }}
+                      onClick={() => {
+                        setRoute(null);
+                        setClickPoints({ start: null, end: null });
+                        setIsSimulating(false);
+                        setSimProgress(0);
+                        addToast('Journey cleared', '🗑️');
+                      }}
+                      style={{
+                        background: 'var(--bg-elevated)', color: 'var(--text-muted)',
+                        border: '1px solid var(--border-glass)', padding: '10px 12px',
+                        borderRadius: '8px', cursor: 'pointer', fontWeight: 600, fontSize: '0.8rem'
+                      }}
                     >
                       Reset
                     </button>
                   </div>
 
-                  {/* Bolo Delhi Voice-Activated Route Planner */}
+                  {/* Bolo Delhi Voice Assistant */}
                   <div style={{ marginTop: '12px' }}>
                     <button
                       onClick={handleVoiceSearch}
                       style={{
                         width: '100%',
-                        background: isListening ? 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)' : 'rgba(255, 107, 53, 0.15)',
-                        border: `1px solid ${isListening ? '#ef4444' : 'rgba(255, 107, 53, 0.4)'}`,
-                        color: isListening ? '#ffffff' : '#ff9933',
-                        padding: '10px 14px',
-                        borderRadius: '8px',
-                        fontWeight: 700,
-                        fontSize: '0.82rem',
-                        cursor: 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        gap: '8px',
+                        background: isListening ? 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)' : 'rgba(255, 107, 53, 0.12)',
+                        border: `1px solid ${isListening ? '#ef4444' : 'var(--border-subtle)'}`,
+                        color: isListening ? '#ffffff' : 'var(--primary-orange)',
+                        padding: '10px 14px', borderRadius: '8px', fontWeight: 700, fontSize: '0.82rem',
+                        cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
                       }}
                     >
-                      <span>{isListening ? '🔴' : '🎙️'}</span>
-                      {isListening ? 'Listening... Speak Now' : 'Bolo Delhi (Voice Route Search)'}
+                      {isListening ? (
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '4px', height: '16px' }}>
+                          <span className="audio-bar" />
+                          <span className="audio-bar" />
+                          <span className="audio-bar" />
+                          <span className="audio-bar" />
+                          <span className="audio-bar" />
+                        </div>
+                      ) : (
+                        <span>🎙️</span>
+                      )}
+                      {isListening ? 'Listening... Speak Delhi Route' : 'Bolo Delhi (Voice Route Search)'}
                     </button>
                     {voiceStatus && (
-                      <div style={{ marginTop: '6px', fontSize: '0.74rem', color: '#38bdf8', background: 'rgba(56, 189, 248, 0.1)', padding: '6px 10px', borderRadius: '6px' }}>
+                      <div style={{ marginTop: '6px', fontSize: '0.74rem', color: 'var(--accent-cyan)', background: 'rgba(56, 189, 248, 0.1)', padding: '6px 10px', borderRadius: '6px' }}>
                         {voiceStatus}
                       </div>
                     )}
                   </div>
 
-                  <div style={{ marginTop: '10px', fontSize: '0.75rem', color: '#64748b' }}>
-                    💡 <em>Click anywhere on map to set Origin & Destination directly.</em>
+                  <div style={{ marginTop: '10px', fontSize: '0.74rem', color: 'var(--text-dim)' }}>
+                    💡 <em>Click any point or stop directly on the map to set Origin & Destination.</em>
                   </div>
                 </div>
 
-                <hr style={{ border: 'none', borderTop: '1px solid rgba(255,255,255,0.08)' }} />
+                <hr style={{ border: 'none', borderTop: '1px solid var(--border-glass)' }} />
 
+                {/* Delhi Region Focus Fly-To */}
                 <div>
-                  <h3 style={{ fontSize: '0.9rem', fontWeight: 700, color: '#ff9933', marginBottom: '8px' }}>
+                  <h3 style={{ fontSize: '0.84rem', fontWeight: 800, color: 'var(--primary-orange)', marginBottom: '8px', letterSpacing: '0.04em' }}>
                     📍 FOCUS DELHI REGION
                   </h3>
                   <select
                     value={corridorFocus}
                     onChange={e => setCorridorFocus(e.target.value)}
-                    style={{ width: '100%', background: '#0f172a', color: '#f1f5f9', border: '1px solid rgba(255, 107, 53, 0.3)', borderRadius: '8px', padding: '8px 12px' }}
+                    style={{
+                      width: '100%', background: 'var(--bg-elevated)', color: 'var(--text-main)',
+                      border: '1px solid var(--border-subtle)', borderRadius: '8px', padding: '8px 12px',
+                      fontSize: '0.82rem', fontWeight: 600, outline: 'none'
+                    }}
                   >
-                    <option value="all">🗺️ All Delhi (Overview)</option>
-                    <option value="central">🏛️ Central Delhi (CP / India Gate)</option>
-                    <option value="north">🏰 North Delhi (ISBT / Red Fort)</option>
+                    <option value="all">🗺️ Entire Delhi NCT (Overview)</option>
+                    <option value="central">🏛️ Central Delhi (CP / Connaught Place)</option>
+                    <option value="north">🏰 North Delhi (ISBT / Kashmere Gate)</option>
                     <option value="south">🏥 South Delhi (AIIMS / Ring Road)</option>
-                    <option value="east">🌉 East Delhi (Vikas Marg)</option>
-                    <option value="west">✈️ West Delhi (Dwarka / IGI)</option>
+                    <option value="east">🌉 East Delhi (Vikas Marg / Anand Vihar)</option>
+                    <option value="west">✈️ West Delhi (Dwarka / Janakpuri)</option>
                   </select>
                 </div>
 
-                <hr style={{ border: 'none', borderTop: '1px solid rgba(255,255,255,0.08)' }} />
+                <hr style={{ border: 'none', borderTop: '1px solid var(--border-glass)' }} />
 
+                {/* Map Layer Toggles */}
                 <div>
-                  <h3 style={{ fontSize: '0.9rem', fontWeight: 700, color: '#ff9933', marginBottom: '8px' }}>
-                    👁️ MAP LAYERS
+                  <h3 style={{ fontSize: '0.84rem', fontWeight: 800, color: 'var(--primary-orange)', marginBottom: '8px', letterSpacing: '0.04em' }}>
+                    👁️ MAP GIS LAYERS
                   </h3>
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', fontSize: '0.8rem' }}>
-                    <label style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer' }}>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer', color: 'var(--text-main)' }}>
                       <input type="checkbox" checked={layerVisibility.segments} onChange={() => setLayerVisibility(p => ({...p, segments: !p.segments}))} style={{ accentColor: '#ff6b35' }} />
                       Road Speeds
                     </label>
-                    <label style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer' }}>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer', color: 'var(--text-main)' }}>
                       <input type="checkbox" checked={layerVisibility.fleet} onChange={() => setLayerVisibility(p => ({...p, fleet: !p.fleet}))} style={{ accentColor: '#ff6b35' }} />
                       Live Fleet
                     </label>
-                    <label style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer' }}>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer', color: 'var(--text-main)' }}>
                       <input type="checkbox" checked={layerVisibility.stops} onChange={() => setLayerVisibility(p => ({...p, stops: !p.stops}))} style={{ accentColor: '#ff6b35' }} />
                       Bus Stops
                     </label>
-                    <label style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer' }}>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer', color: 'var(--text-main)' }}>
                       <input type="checkbox" checked={layerVisibility.walkshed} onChange={() => setLayerVisibility(p => ({...p, walkshed: !p.walkshed}))} style={{ accentColor: '#ff6b35' }} />
                       500m Walkshed
                     </label>
                   </div>
                 </div>
+
+                {/* Interactive Time Machine Forecaster */}
+                <div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                    <h3 style={{ fontSize: '0.84rem', fontWeight: 800, color: 'var(--primary-orange)', letterSpacing: '0.04em' }}>
+                      ⏳ CONGESTION TIME MACHINE
+                    </h3>
+                    <span style={{ fontSize: '0.74rem', fontWeight: 800, color: timeOffsetMinutes === 0 ? 'var(--accent-emerald)' : 'var(--accent-cyan)' }}>
+                      {timeOffsetMinutes === 0 ? 'Live Current' : `+${timeOffsetMinutes} Mins`}
+                    </span>
+                  </div>
+                  <input
+                    type="range"
+                    min="0"
+                    max="60"
+                    step="15"
+                    value={timeOffsetMinutes}
+                    onChange={e => {
+                      const v = parseInt(e.target.value);
+                      setTimeOffsetMinutes(v);
+                      addToast(v === 0 ? 'Viewing live traffic speeds' : `Viewing ML forecast for +${v} minutes`, '⏳');
+                    }}
+                    style={{ width: '100%', accentColor: '#ff6b35', cursor: 'pointer' }}
+                  />
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.68rem', color: 'var(--text-dim)', marginTop: '2px' }}>
+                    <span>Now</span>
+                    <span>+15m</span>
+                    <span>+30m</span>
+                    <span>+45m</span>
+                    <span>+60m</span>
+                  </div>
+                </div>
+
               </div>
             </div>
           )}
 
-          {/* TAB 2: BUS TABLE */}
-          {activeTab === 'fleet' && <BusTableComponent fleet={fleet} />}
+          {/* TAB 2: ACTIVE BUS FLEET EXPLORER */}
+          {activeTab === 'fleet' && (
+            <BusTableComponent
+              fleet={fleet}
+              onTrackBus={(bId) => {
+                setTrackingBus(bId);
+                setActiveTab('map');
+                addToast(`Locking camera onto Bus #${bId}`, '🛰️');
+              }}
+            />
+          )}
 
-          {/* TAB 3: PREDICTIONS */}
-          {activeTab === 'ml' && <PredictionsComponent predictions={predictions} />}
+          {/* TAB 3: AI TRAFFIC FORECASTING */}
+          {activeTab === 'ml' && (
+            <PredictionsComponent
+              predictions={predictions}
+              timeOffsetMinutes={timeOffsetMinutes}
+              setTimeOffsetMinutes={setTimeOffsetMinutes}
+            />
+          )}
 
-          {/* TAB 4: ALERTS & BUNCHING */}
-          {activeTab === 'alerts' && <AlertsComponent alerts={alerts} />}
+          {/* TAB 4: TRANSIT ALERTS & BUNCHING */}
+          {activeTab === 'alerts' && (
+            <AlertsComponent
+              alerts={alerts}
+              onResolveBunching={handleDispatchResolve}
+            />
+          )}
 
-          {/* TAB 5: MULTI-ROUTE CORRIDOR & BUS BRANCHING BETWEEN 2 POINTS */}
+          {/* TAB 5: MULTI-ROUTE CORRIDOR & BUS BRANCHING */}
           {activeTab === 'branching' && (
             <CorridorBranchingComponent
               stops={stops}
@@ -858,12 +1423,122 @@
               onRefresh={() => fetchBranches(branchOrigin, branchDest)}
             />
           )}
+
+          {/* Toast Notification Container */}
+          <div className="toast-container">
+            {toasts.map(t => (
+              <div key={t.id} className="toast-item">
+                <span style={{ fontSize: '1.2rem' }}>{t.icon}</span>
+                <span>{t.msg}</span>
+              </div>
+            ))}
+          </div>
+
+          {/* Official Digital Transit Boarding Pass Modal */}
+          {showTransitPass && route && (
+            <div style={{
+              position: 'fixed', inset: 0, zIndex: 10000,
+              background: 'rgba(0, 0, 0, 0.75)', backdropFilter: 'blur(8px)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px'
+            }}>
+              <div className="glass-panel" style={{
+                maxWidth: '480px', width: '100%', padding: '28px', border: '2px solid var(--primary-orange)',
+                position: 'relative', animation: 'slideInRight 0.25s ease'
+              }}>
+                <button
+                  onClick={() => setShowTransitPass(false)}
+                  style={{
+                    position: 'absolute', top: '16px', right: '16px',
+                    background: 'transparent', border: 'none', color: 'var(--text-dim)', fontSize: '1.1rem', cursor: 'pointer'
+                  }}
+                >
+                  ✕
+                </button>
+
+                <div style={{ textAlign: 'center', borderBottom: '2px dashed var(--border-glass)', paddingBottom: '16px', marginBottom: '16px' }}>
+                  <div style={{ fontSize: '1.4rem' }}>🚌 🇮🇳</div>
+                  <h2 style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--primary-orange)', marginTop: '4px' }}>
+                    DELHI TRANSPORT CORPORATION (DTC)
+                  </h2>
+                  <div style={{ fontSize: '0.74rem', color: 'var(--text-muted)' }}>
+                    Smart Digital Commuter Transit Pass • One Delhi Transport Stack
+                  </div>
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px', marginBottom: '16px', fontSize: '0.84rem' }}>
+                  <div>
+                    <span style={{ fontSize: '0.7rem', color: 'var(--text-dim)' }}>BOARDING STOP</span>
+                    <div style={{ fontWeight: 800, color: 'var(--text-main)' }}>{selectedSrc}</div>
+                  </div>
+                  <div>
+                    <span style={{ fontSize: '0.7rem', color: 'var(--text-dim)' }}>ALIGHTING STOP</span>
+                    <div style={{ fontWeight: 800, color: 'var(--text-main)' }}>{selectedDst}</div>
+                  </div>
+                  <div>
+                    <span style={{ fontSize: '0.7rem', color: 'var(--text-dim)' }}>JOURNEY DISTANCE</span>
+                    <div style={{ fontWeight: 800, color: 'var(--text-main)' }}>{route.distance_km} km</div>
+                  </div>
+                  <div>
+                    <span style={{ fontSize: '0.7rem', color: 'var(--text-dim)' }}>DYNAMIC ETA</span>
+                    <div style={{ fontWeight: 800, color: 'var(--accent-emerald)' }}>{route.eta_minutes} mins</div>
+                  </div>
+                  <div>
+                    <span style={{ fontSize: '0.7rem', color: 'var(--text-dim)' }}>STANDARD FARE</span>
+                    <div style={{ fontWeight: 800, color: 'var(--accent-cyan)', fontSize: '1.1rem' }}>₹{route.fare_inr || 15}</div>
+                  </div>
+                  <div>
+                    <span style={{ fontSize: '0.7rem', color: 'var(--text-dim)' }}>CO₂ EMISSION SAVED</span>
+                    <div style={{ fontWeight: 800, color: 'var(--accent-emerald)' }}>🌱 {route.carbon_saved_kg || 0.8} kg</div>
+                  </div>
+                </div>
+
+                <div style={{ background: 'var(--bg-elevated)', borderRadius: '8px', padding: '12px', textAlign: 'center', marginBottom: '16px' }}>
+                  <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '0.78rem', color: 'var(--text-muted)' }}>
+                    PASS CODE: DTC-{Math.floor(100000 + Math.random() * 900000)}
+                  </div>
+                  <div style={{ fontSize: '0.72rem', color: 'var(--text-dim)', marginTop: '2px' }}>
+                    Valid for travel across DTC AC / Non-AC & Cluster Fleet
+                  </div>
+                </div>
+
+                <div style={{ display: 'flex', gap: '10px' }}>
+                  <button
+                    onClick={() => {
+                      window.print();
+                    }}
+                    style={{
+                      flex: 1, background: 'linear-gradient(135deg, #FF6B35 0%, #e85d04 100%)',
+                      color: '#fff', border: 'none', padding: '10px', borderRadius: '8px',
+                      fontWeight: 700, fontSize: '0.84rem', cursor: 'pointer'
+                    }}
+                  >
+                    🖨️ Print / Save Pass
+                  </button>
+                  <button
+                    onClick={() => setShowTransitPass(false)}
+                    style={{
+                      background: 'var(--bg-elevated)', color: 'var(--text-main)',
+                      border: '1px solid var(--border-glass)', padding: '10px 16px',
+                      borderRadius: '8px', fontWeight: 600, fontSize: '0.84rem', cursor: 'pointer'
+                    }}
+                  >
+                    Close
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       );
     }
 
-    // Leaflet GIS Map Container (60 FPS, persistent instance)
-    function LeafletMapContainer({ fleet, segments, stops, route, corridorFocus, layerVisibility, onMapClick, clickPoints }) {
+    // --- Enhanced Leaflet Map Component with Simulation & Lock-on Camera ---
+    function LeafletMapContainer({
+      fleet, segments, stops, route, corridorFocus, layerVisibility,
+      onMapClick, clickPoints, trackingBus, onStopTracking,
+      isSimulating, simProgress, setSimProgress, simSpeedMultiplier,
+      timeOffsetMinutes, onViewStopArrivals
+    }) {
       const mapRef = useRef(null);
       const instanceRef = useRef(null);
       const roadGroup = useRef(null);
@@ -872,6 +1547,7 @@
       const walkshedGroup = useRef(null);
       const routeGroup = useRef(null);
       const clickGroup = useRef(null);
+      const simBusMarker = useRef(null);
       const [mapReady, setMapReady] = useState(false);
 
       const onMapClickRef = useRef(onMapClick);
@@ -879,25 +1555,31 @@
         onMapClickRef.current = onMapClick;
       }, [onMapClick]);
 
+      // Map Initialization
       useEffect(() => {
         if (!mapRef.current || instanceRef.current) return;
         const map = L.map(mapRef.current, { center: [28.6139, 77.2090], zoom: 12 });
         instanceRef.current = map;
 
-        // Street Maps: OpenStreetMap + Esri World Street Map (high-res fallback)
+        // Tile basemaps
+        const dark = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+          maxZoom: 19,
+          attribution: '&copy; CARTO & OpenStreetMap',
+        }).addTo(map);
+
         const osm = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
           maxZoom: 19,
-          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-        }).addTo(map);
+          attribution: '&copy; OpenStreetMap',
+        });
 
         const esriStreet = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
           maxZoom: 19,
-          attribution: 'Tiles &copy; Esri',
+          attribution: '&copy; Esri',
         });
 
         const sat = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
           maxZoom: 19,
-          attribution: 'Tiles &copy; Esri',
+          attribution: '&copy; Esri',
         });
 
         const light = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
@@ -906,9 +1588,10 @@
         });
 
         L.control.layers({
+          '🌙 Cyberpunk Dark': dark,
           '🗺️ OpenStreetMap': osm,
-          '🏛️ Esri Street Map': esriStreet,
-          '🛰️ Satellite (Esri)': sat,
+          '🏛️ Esri Street': esriStreet,
+          '🛰️ Satellite': sat,
           '☀️ Clean Light': light,
         }, null, { position: 'topright' }).addTo(map);
 
@@ -925,10 +1608,7 @@
           }
         });
 
-        setTimeout(() => {
-          if (map) map.invalidateSize();
-        }, 200);
-
+        setTimeout(() => { if (map) map.invalidateSize(); }, 200);
         setMapReady(true);
 
         return () => {
@@ -942,55 +1622,121 @@
           clickGroup.current = null;
           setMapReady(false);
         };
-        window.__viewStopArrivals = (stopId) => {
-          fetchStopArrivals(stopId);
-        };
       }, []);
 
-      // Fly to corridor
+      // Focus Corridor Fly-to
       useEffect(() => {
         const map = instanceRef.current;
         if (!map) return;
         const coords = {
           'all': [[28.6139, 77.2090], 12],
-          'central': [[28.6200, 77.2180], 13],
+          'central': [[28.6250, 77.2180], 13.5],
           'north': [[28.6672, 77.2284], 14],
-          'south': [[28.5672, 77.2100], 13],
-          'east': [[28.6364, 77.2956], 13],
-          'west': [[28.5950, 77.0700], 13],
+          'south': [[28.5672, 77.2100], 13.5],
+          'east': [[28.6364, 77.2956], 13.5],
+          'west': [[28.5950, 77.0700], 13.5],
         };
         const t = coords[corridorFocus] || coords['all'];
-        map.flyTo(t[0], t[1], { duration: 1.0 });
+        map.flyTo(t[0], t[1], { duration: 1.2 });
       }, [corridorFocus]);
 
-      // Roads
+      // Render Road Segments with Time-Machine Forecast logic
       useEffect(() => {
         if (!mapReady || !roadGroup.current) return;
         roadGroup.current.clearLayers();
         if (!layerVisibility.segments || !segments) return;
+
         segments.forEach(seg => {
-          const color = CONGESTION_COLORS[seg.congestion_level] || '#2ecc71';
-          const p = L.polyline(seg.coordinates, { color, weight: 4, opacity: 0.88 });
-          p.bindPopup(`<b>🛣️ ${seg.road_name}</b><br/>Speed: ${seg.speed_kmh} km/h<br/>Status: ${(seg.congestion_level || '').toUpperCase()}`);
+          let speed = seg.speed_kmh;
+          let level = seg.congestion_level;
+
+          // Adjust speed if Time Machine Slider is active
+          if (timeOffsetMinutes > 0) {
+            // Apply simulated ML forecast factor
+            const factor = timeOffsetMinutes === 15 ? 0.95 : (timeOffsetMinutes === 30 ? 0.88 : (timeOffsetMinutes === 45 ? 0.82 : 0.78));
+            speed = Math.round(speed * factor * 10) / 10;
+            if (speed >= 24) level = 'free_flow';
+            else if (speed >= 16) level = 'moderate';
+            else if (speed >= 10) level = 'heavy';
+            else level = 'gridlock';
+          }
+
+          const color = CONGESTION_COLORS[level] || '#10b981';
+          const p = L.polyline(seg.coordinates, { color, weight: 4.5, opacity: 0.9 });
+          p.bindPopup(`
+            <div style="font-family: inherit; padding: 2px;">
+              <strong style="color: var(--primary-orange); font-size: 13px;">🛣️ ${seg.road_name}</strong>
+              <div style="font-size: 11px; color: var(--text-muted); margin-top: 3px;">
+                Type: <b>${seg.road_type}</b> | Length: <b>${seg.length_m}m</b>
+              </div>
+              <div style="margin-top: 6px; font-size: 12px; font-weight: 700; color: ${color};">
+                Velocity: ${speed} km/h (${level.toUpperCase()})
+                ${timeOffsetMinutes > 0 ? ` [Forecast +${timeOffsetMinutes}m]` : ''}
+              </div>
+            </div>
+          `);
           p.addTo(roadGroup.current);
         });
-      }, [segments, layerVisibility.segments, mapReady]);
+      }, [segments, layerVisibility.segments, timeOffsetMinutes, mapReady]);
 
-      // Fleet
+      // Render Fleet Markers & Handle Lock-on Tracking
       useEffect(() => {
         if (!mapReady || !fleetGroup.current) return;
         fleetGroup.current.clearLayers();
         if (!layerVisibility.fleet || !fleet) return;
-        fleet.slice(0, 450).forEach(bus => {
-          const spd = bus.speed || 0;
-          let color = spd >= 20 ? '#10b981' : (spd >= 5 ? '#f59e0b' : '#ef4444');
-          const m = L.circleMarker([bus.lat, bus.lon], { radius: 6, fillColor: color, color: '#fff', weight: 1.5, fillOpacity: 0.85 });
-          m.bindPopup(`<b>🚌 Bus #${bus.bus_id}</b><br/>Route: ${bus.route_id}<br/>Speed: <b>${spd.toFixed(1)} km/h</b><br/>Status: ${bus.status}`);
-          m.addTo(fleetGroup.current);
-        });
-      }, [fleet, layerVisibility.fleet, mapReady]);
 
-      // Stops & Walksheds
+        fleet.slice(0, 480).forEach(bus => {
+          const spd = bus.speed || 0;
+          const isTarget = trackingBus === bus.bus_id;
+          const color = isTarget ? '#00f0ff' : (spd >= 20 ? '#10b981' : (spd >= 5 ? '#f59e0b' : '#ef4444'));
+
+          const busHtml = `
+            <div style="transform: translate(-50%, -50%); display: flex; align-items: center; justify-content: center; cursor: pointer;">
+              <div style="
+                width: ${isTarget ? '22px' : '16px'}; height: ${isTarget ? '22px' : '16px'};
+                border-radius: 50%; background: ${color}; border: 2px solid #ffffff;
+                box-shadow: 0 0 ${isTarget ? '16px #00f0ff' : '8px ' + color};
+                display: flex; align-items: center; justify-content: center; font-size: 9px; color: #fff; font-weight: 800;
+              ">
+                ${isTarget ? '★' : ''}
+              </div>
+            </div>`;
+
+          const m = L.marker([bus.lat, bus.lon], {
+            icon: L.divIcon({ className: 'bus-marker-div', html: busHtml, iconSize: [0, 0] }),
+            zIndexOffset: isTarget ? 3000 : 500
+          });
+
+          m.bindPopup(`
+            <div style="font-family: inherit; min-width: 170px; padding: 2px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                <strong style="color: var(--primary-orange); font-size: 13px;">🚌 Bus #${bus.bus_id}</strong>
+                <span style="font-size: 10px; background: rgba(56, 189, 248, 0.2); color: #38bdf8; padding: 1px 6px; border-radius: 10px; font-weight: 700;">
+                  Route ${bus.route_id}
+                </span>
+              </div>
+              <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 6px;">
+                Speed: <b style="color: ${color}">${spd.toFixed(1)} km/h</b> • Status: <b>${bus.status}</b>
+              </div>
+              <button
+                onclick="window.__trackBus('${bus.bus_id}')"
+                style="width: 100%; background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color: #fff; border: none; padding: 6px 10px; border-radius: 6px; font-size: 11px; font-weight: 700; cursor: pointer;"
+              >
+                🛰️ Track & Follow Bus
+              </button>
+            </div>
+          `);
+
+          m.addTo(fleetGroup.current);
+
+          // If this is the tracked bus, smoothly pan map
+          if (isTarget && instanceRef.current) {
+            instanceRef.current.panTo([bus.lat, bus.lon], { animate: true, duration: 0.8 });
+          }
+        });
+      }, [fleet, layerVisibility.fleet, trackingBus, mapReady]);
+
+      // Render Bus Stops & Walksheds
       useEffect(() => {
         if (!mapReady || !stopsGroup.current || !walkshedGroup.current) return;
         stopsGroup.current.clearLayers();
@@ -999,32 +1745,32 @@
 
         if (layerVisibility.stops) {
           stops.forEach(s => {
-            const m = L.circleMarker([s.lat, s.lon], {
-              radius: 6,
-              fillColor: '#0284c7',
-              color: '#ffffff',
-              weight: 2,
-              fillOpacity: 0.9,
+            const stopHtml = `
+              <div style="transform: translate(-50%, -50%); cursor: pointer;">
+                <div style="width: 14px; height: 14px; border-radius: 50%; background: #0284c7; border: 2px solid #ffffff; box-shadow: 0 0 8px rgba(2, 132, 199, 0.7);"></div>
+              </div>`;
+
+            const m = L.marker([s.lat, s.lon], {
+              icon: L.divIcon({ className: 'stop-pin', html: stopHtml, iconSize: [0, 0] })
             });
 
             const routesArr = s.routes || [];
-            const routeList = routesArr.slice(0, 3).map(r => `<div style="font-size:10px; color:#cbd5e1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">• ${r}</div>`).join('');
-            const moreCount = routesArr.length > 3 ? `<div style="font-size:9.5px; color:#94a3b8;">+${routesArr.length - 3} more lines</div>` : '';
+            const metroList = (s.metro_lines || []).map(m => `<span class="metro-badge" style="font-size: 9px; margin: 1px 2px;">🚇 ${m}</span>`).join('');
 
             const popupContent = `
-              <div style="font-family:inherit; min-width:180px; padding:2px;">
-                <div style="font-weight:700; color:#38bdf8; font-size:13px; margin-bottom:2px;">🚏 ${s.name}</div>
-                <div style="font-size:10.5px; color:#94a3b8; margin-bottom:6px;">Stop ID: <b>${s.stop_id}</b> | GPS: ${s.lat.toFixed(4)}, ${s.lon.toFixed(4)}</div>
-                ${routeList ? `<div style="margin-bottom:6px;"><b>Routes Served:</b>${routeList}${moreCount}</div>` : ''}
-                <div style="display:flex; gap:6px; margin-top:8px;">
-                  <button onclick="window.__setOrigin(${s.lat}, ${s.lon}, '${s.name.replace(/'/g, "\\'")}')" style="flex:1; background:#10b981; color:#fff; border:none; padding:5px 8px; border-radius:6px; font-size:10px; font-weight:700; cursor:pointer;">🟢 Set Origin</button>
-                  <button onclick="window.__setDest(${s.lat}, ${s.lon}, '${s.name.replace(/'/g, "\\'")}')" style="flex:1; background:#ef4444; color:#fff; border:none; padding:5px 8px; border-radius:6px; font-size:10px; font-weight:700; cursor:pointer;">🔴 Set Dest</button>
+              <div style="font-family: inherit; min-width: 190px; padding: 2px;">
+                <div style="font-weight: 800; color: #38bdf8; font-size: 13px; margin-bottom: 2px;">🚏 ${s.name}</div>
+                <div style="font-size: 10px; color: var(--text-dim); margin-bottom: 4px;">Stop ID: <b>${s.stop_id}</b></div>
+                ${metroList ? `<div style="margin-bottom: 6px; display: flex; flex-wrap: wrap;">${metroList}</div>` : ''}
+                <div style="display: flex; gap: 6px; margin-top: 8px;">
+                  <button onclick="window.__setOrigin(${s.lat}, ${s.lon}, '${s.name.replace(/'/g, "\\'")}')" style="flex: 1; background: #10b981; color: #fff; border: none; padding: 5px 8px; border-radius: 6px; font-size: 10px; font-weight: 700; cursor: pointer;">🟢 Origin</button>
+                  <button onclick="window.__setDest(${s.lat}, ${s.lon}, '${s.name.replace(/'/g, "\\'")}')" style="flex: 1; background: #ef4444; color: #fff; border: none; padding: 5px 8px; border-radius: 6px; font-size: 10px; font-weight: 700; cursor: pointer;">🔴 Dest</button>
                 </div>
-                <button onclick="window.__viewStopArrivals('${s.stop_id}')" style="width:100%; margin-top:6px; background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color:#fff; border:none; padding:6px 8px; border-radius:6px; font-size:10.5px; font-weight:700; cursor:pointer;">⏱️ Live Next-Bus ETA Board</button>
+                <button onclick="window.__viewStopArrivals('${s.stop_id}')" style="width: 100%; margin-top: 6px; background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color: #fff; border: none; padding: 6px 8px; border-radius: 6px; font-size: 10.5px; font-weight: 700; cursor: pointer;">⏱️ Live Arrival Board</button>
               </div>
             `;
             m.bindPopup(popupContent);
-            m.bindTooltip(`🚏 ${s.name}`, { direction: 'top', offset: [0, -6] });
+            m.bindTooltip(`🚏 ${s.name}`, { direction: 'top', offset: [0, -8] });
             m.addTo(stopsGroup.current);
           });
         }
@@ -1035,7 +1781,7 @@
               radius: 500,
               color: '#0ea5e9',
               fillColor: '#0ea5e9',
-              fillOpacity: 0.07,
+              fillOpacity: 0.06,
               weight: 1,
               dashArray: '4 4',
             }).addTo(walkshedGroup.current);
@@ -1043,294 +1789,615 @@
         }
       }, [stops, layerVisibility.stops, layerVisibility.walkshed, mapReady]);
 
-      // Route
+      // Render Planned Route
       useEffect(() => {
         if (!mapReady || !routeGroup.current) return;
         routeGroup.current.clearLayers();
+
         if (route && route.geojson) {
-          const l = L.geoJSON(route.geojson, { style: { color: '#00f0ff', weight: 6, opacity: 0.95, dashArray: '8 4' } }).addTo(routeGroup.current);
-          if (instanceRef.current && l.getBounds().isValid()) instanceRef.current.fitBounds(l.getBounds(), { padding: [40, 40] });
+          const l = L.geoJSON(route.geojson, {
+            style: { color: '#00f0ff', weight: 6, opacity: 0.95, dashArray: '8 5' }
+          }).addTo(routeGroup.current);
+
+          if (instanceRef.current && l.getBounds().isValid()) {
+            instanceRef.current.fitBounds(l.getBounds(), { padding: [50, 50] });
+          }
         }
       }, [route, mapReady]);
 
-      // Origin & Destination Journey Markers
+      // Origin & Destination Pins
       useEffect(() => {
         if (!mapReady || !clickGroup.current) return;
         clickGroup.current.clearLayers();
 
         if (clickPoints.start) {
-          const originHtml = `
-            <div style="transform: translate(-50%, -100%); display: flex; flex-direction: column; align-items: center; pointer-events: auto; cursor: pointer;">
-              <div style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: #ffffff; padding: 4px 10px; border-radius: 20px; font-weight: 800; font-size: 11px; letter-spacing: 0.05em; display: flex; align-items: center; gap: 5px; box-shadow: 0 4px 14px rgba(16, 185, 129, 0.65); border: 2px solid #ffffff; white-space: nowrap;">
+          const oHtml = `
+            <div style="transform: translate(-50%, -100%); display: flex; flex-direction: column; align-items: center;">
+              <div style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: #ffffff; padding: 4px 10px; border-radius: 20px; font-weight: 800; font-size: 11px; box-shadow: 0 4px 14px rgba(16, 185, 129, 0.7); border: 2px solid #ffffff; white-space: nowrap;">
                 🟢 ORIGIN
               </div>
-              <div style="width: 0; height: 0; border-left: 6px solid transparent; border-right: 6px solid transparent; border-top: 8px solid #059669; margin-top: -1px;"></div>
+              <div style="width: 0; height: 0; border-left: 6px solid transparent; border-right: 6px solid transparent; border-top: 8px solid #059669;"></div>
             </div>`;
-          const originIcon = L.divIcon({ className: 'origin-pin-icon', html: originHtml, iconSize: [0, 0] });
-          L.marker(clickPoints.start, { icon: originIcon, zIndexOffset: 2000 })
-            .bindPopup(`<b>🟢 Journey Origin</b><br/>GPS: ${clickPoints.start[0].toFixed(4)}, ${clickPoints.start[1].toFixed(4)}`)
+          L.marker(clickPoints.start, { icon: L.divIcon({ className: 'o-pin', html: oHtml, iconSize: [0, 0] }), zIndexOffset: 2000 })
             .addTo(clickGroup.current);
-          L.circleMarker(clickPoints.start, { radius: 7, fillColor: '#10b981', color: '#ffffff', weight: 2.5, fillOpacity: 1 }).addTo(clickGroup.current);
         }
 
         if (clickPoints.end) {
-          const destHtml = `
-            <div style="transform: translate(-50%, -100%); display: flex; flex-direction: column; align-items: center; pointer-events: auto; cursor: pointer;">
-              <div style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: #ffffff; padding: 4px 10px; border-radius: 20px; font-weight: 800; font-size: 11px; letter-spacing: 0.05em; display: flex; align-items: center; gap: 5px; box-shadow: 0 4px 14px rgba(239, 68, 68, 0.65); border: 2px solid #ffffff; white-space: nowrap;">
+          const dHtml = `
+            <div style="transform: translate(-50%, -100%); display: flex; flex-direction: column; align-items: center;">
+              <div style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: #ffffff; padding: 4px 10px; border-radius: 20px; font-weight: 800; font-size: 11px; box-shadow: 0 4px 14px rgba(239, 68, 68, 0.7); border: 2px solid #ffffff; white-space: nowrap;">
                 🔴 DESTINATION
               </div>
-              <div style="width: 0; height: 0; border-left: 6px solid transparent; border-right: 6px solid transparent; border-top: 8px solid #dc2626; margin-top: -1px;"></div>
+              <div style="width: 0; height: 0; border-left: 6px solid transparent; border-right: 6px solid transparent; border-top: 8px solid #dc2626;"></div>
             </div>`;
-          const destIcon = L.divIcon({ className: 'dest-pin-icon', html: destHtml, iconSize: [0, 0] });
-          L.marker(clickPoints.end, { icon: destIcon, zIndexOffset: 2000 })
-            .bindPopup(`<b>🔴 Journey Destination</b><br/>GPS: ${clickPoints.end[0].toFixed(4)}, ${clickPoints.end[1].toFixed(4)}`)
+          L.marker(clickPoints.end, { icon: L.divIcon({ className: 'd-pin', html: dHtml, iconSize: [0, 0] }), zIndexOffset: 2000 })
             .addTo(clickGroup.current);
-          L.circleMarker(clickPoints.end, { radius: 7, fillColor: '#ef4444', color: '#ffffff', weight: 2.5, fillOpacity: 1 }).addTo(clickGroup.current);
         }
       }, [clickPoints, mapReady]);
+
+      // Route Simulation Animation Loop
+      useEffect(() => {
+        if (!isSimulating || !route || !route.route_latlngs || route.route_latlngs.length < 2) {
+          if (simBusMarker.current && routeGroup.current) {
+            routeGroup.current.removeLayer(simBusMarker.current);
+            simBusMarker.current = null;
+          }
+          return;
+        }
+
+        const waypoints = route.route_latlngs;
+        const totalPoints = waypoints.length;
+
+        const interval = setInterval(() => {
+          setSimProgress(prev => {
+            const next = prev + (0.5 * simSpeedMultiplier);
+            if (next >= 100) {
+              clearInterval(interval);
+              return 100;
+            }
+            return next;
+          });
+        }, 100);
+
+        return () => clearInterval(interval);
+      }, [isSimulating, route, simSpeedMultiplier]);
+
+      // Update Simulated Bus Marker Position on Map
+      useEffect(() => {
+        if (!route || !route.route_latlngs || route.route_latlngs.length < 2 || !routeGroup.current) return;
+        const waypoints = route.route_latlngs;
+        const total = waypoints.length;
+        const floatIndex = (simProgress / 100) * (total - 1);
+        const idx1 = Math.floor(floatIndex);
+        const idx2 = Math.min(idx1 + 1, total - 1);
+        const frac = floatIndex - idx1;
+
+        const p1 = waypoints[idx1];
+        const p2 = waypoints[idx2];
+        const curLat = p1[0] + (p2[0] - p1[0]) * frac;
+        const curLon = p1[1] + (p2[1] - p1[1]) * frac;
+
+        const simHtml = `
+          <div style="transform: translate(-50%, -50%); display: flex; flex-direction: column; align-items: center; pointer-events: none;">
+            <div style="background: linear-gradient(135deg, #FF6B35 0%, #e85d04 100%); color: #fff; padding: 4px 10px; border-radius: 14px; font-weight: 800; font-size: 11px; border: 2px solid #fff; box-shadow: 0 0 16px rgba(255,107,53,0.9); white-space: nowrap; display: flex; align-items: center; gap: 4px;">
+              <span>🚌 DTC SIMULATOR</span>
+            </div>
+            <div class="pulse-dot-cyan" style="margin-top: 2px;"></div>
+          </div>`;
+
+        if (!simBusMarker.current) {
+          simBusMarker.current = L.marker([curLat, curLon], {
+            icon: L.divIcon({ className: 'sim-bus-marker', html: simHtml, iconSize: [0, 0] }),
+            zIndexOffset: 4000
+          }).addTo(routeGroup.current);
+        } else {
+          simBusMarker.current.setLatLng([curLat, curLon]);
+        }
+      }, [simProgress, route]);
+
+      // Active Tracked Bus Object
+      const activeTrackedBusObj = useMemo(() => {
+        if (!trackingBus || !fleet) return null;
+        return fleet.find(b => b.bus_id === trackingBus);
+      }, [trackingBus, fleet]);
 
       return (
         <div style={{ position: 'relative', width: '100%', height: '620px', borderRadius: '14px', overflow: 'hidden' }}>
           <div ref={mapRef} style={{ width: '100%', height: '100%' }} />
-          <div style={{
-            position: 'absolute', bottom: '24px', right: '24px', width: '180px',
-            background: 'rgba(15, 23, 42, 0.92)', border: '1px solid rgba(255, 107, 53, 0.45)',
-            borderRadius: '12px', padding: '12px 14px', backdropFilter: 'blur(12px)',
-            zIndex: 1000, fontSize: '11px', lineHeight: 1.5,
-          }}>
-            <b style={{ color: '#ff9933', fontSize: '11.5px', display: 'block', marginBottom: '6px' }}>🚦 TRAFFIC VELOCITY</b>
-            <div style={{ display: 'flex', alignItems: 'center', marginBottom: '3px' }}><span style={{ display: 'inline-block', width: '14px', height: '4px', background: '#2ecc71', marginRight: '8px', borderRadius: '2px' }} />Free Flow (&gt;28)</div>
-            <div style={{ display: 'flex', alignItems: 'center', marginBottom: '3px' }}><span style={{ display: 'inline-block', width: '14px', height: '4px', background: '#f1c40f', marginRight: '8px', borderRadius: '2px' }} />Moderate (18-28)</div>
-            <div style={{ display: 'flex', alignItems: 'center', marginBottom: '3px' }}><span style={{ display: 'inline-block', width: '14px', height: '4px', background: '#e67e22', marginRight: '8px', borderRadius: '2px' }} />Heavy (10-18)</div>
-            <div style={{ display: 'flex', alignItems: 'center', marginBottom: '6px' }}><span style={{ display: 'inline-block', width: '14px', height: '4px', background: '#e74c3c', marginRight: '8px', borderRadius: '2px' }} />Gridlock (&lt;10)</div>
-            <hr style={{ border: 'none', borderTop: '1px solid rgba(255,255,255,0.12)', margin: '4px 0 6px 0' }} />
-            <div style={{ display: 'flex', alignItems: 'center' }}><span style={{ display: 'inline-block', width: '14px', height: '4px', background: '#00f0ff', marginRight: '8px', borderRadius: '2px' }} />Optimal Route</div>
-          </div>
-        </div>
-      );
-    }
 
-    // Bus Table Component with Instant Search
-    function BusTableComponent({ fleet }) {
-      const [search, setSearch] = useState('');
-      const [statusFilter, setStatusFilter] = useState('ALL');
-      const [page, setPage] = useState(0);
-
-      const filtered = useMemo(() => {
-        if (!fleet) return [];
-        return fleet.filter(b => {
-          const mSearch = search === '' || b.bus_id.toLowerCase().includes(search.toLowerCase()) || b.route_id.toLowerCase().includes(search.toLowerCase());
-          const mStatus = statusFilter === 'ALL' || (statusFilter === 'FREE' && b.status === 'Free Flow') || (statusFilter === 'MOD' && b.status === 'Moderate') || (statusFilter === 'SLOW' && b.status.includes('Slow'));
-          return mSearch && mStatus;
-        });
-      }, [fleet, search, statusFilter]);
-
-      const rows = filtered.slice(page * 50, (page + 1) * 50);
-
-      return (
-        <div className="glass-panel" style={{ padding: '20px', marginTop: '20px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-            <div>
-              <h2 style={{ fontSize: '1.2rem', fontWeight: 700, color: '#f1f5f9' }}>🚌 Active Bus Fleet Explorer</h2>
-              <p style={{ fontSize: '0.82rem', color: '#94a3b8' }}>Showing {filtered.length.toLocaleString()} of {fleet.length.toLocaleString()} buses • 0ms instant filter</p>
-            </div>
-          </div>
-
-          <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', marginBottom: '16px' }}>
-            <input
-              type="text"
-              placeholder="Search Bus ID or Route (e.g. DL1PC, 729, 419...)"
-              value={search}
-              onChange={e => { setSearch(e.target.value); setPage(0); }}
-              style={{ flex: 1, minWidth: '220px', background: '#0f172a', border: '1px solid rgba(255, 107, 53, 0.25)', borderRadius: '8px', padding: '8px 14px', color: '#f1f5f9' }}
-            />
-            <div style={{ display: 'flex', gap: '6px' }}>
-              {[
-                { id: 'ALL', label: 'All' },
-                { id: 'FREE', label: '🟢 Free Flow' },
-                { id: 'MOD', label: '🟡 Moderate' },
-                { id: 'SLOW', label: '🔴 Slow/Dwell' },
-              ].map(btn => (
+          {/* Floating Tracking HUD */}
+          {activeTrackedBusObj && (
+            <div style={{
+              position: 'absolute', top: '16px', left: '16px', zIndex: 1000,
+              maxWidth: '360px', width: 'calc(100% - 32px)',
+            }}>
+              <div className="hud-card" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <span className="pulse-dot-cyan" />
+                    <strong style={{ color: 'var(--accent-cyan)', fontSize: '0.9rem' }}>
+                      LOCK-ON: Bus #{activeTrackedBusObj.bus_id}
+                    </strong>
+                  </div>
+                  <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: '2px' }}>
+                    Route: <b style={{ color: 'var(--text-main)' }}>{activeTrackedBusObj.route_id}</b> • Speed: <b style={{ color: '#10b981' }}>{activeTrackedBusObj.speed} km/h</b> • Status: {activeTrackedBusObj.status}
+                  </div>
+                </div>
                 <button
-                  key={btn.id}
-                  onClick={() => { setStatusFilter(btn.id); setPage(0); }}
+                  onClick={onStopTracking}
                   style={{
-                    background: statusFilter === btn.id ? 'linear-gradient(135deg, #FF6B35 0%, #e85d04 100%)' : '#1e293b',
-                    color: statusFilter === btn.id ? '#fff' : '#cbd5e1',
-                    border: 'none', padding: '6px 12px', borderRadius: '8px', cursor: 'pointer', fontSize: '0.8rem',
+                    background: 'rgba(239, 68, 68, 0.2)', border: '1px solid rgba(239, 68, 68, 0.5)',
+                    color: '#ef4444', borderRadius: '6px', padding: '4px 10px', fontSize: '0.74rem',
+                    fontWeight: 800, cursor: 'pointer'
                   }}
                 >
-                  {btn.label}
+                  ✕ Unfollow
                 </button>
-              ))}
+              </div>
+            </div>
+          )}
+
+          {/* Floating Route Simulation HUD */}
+          {isSimulating && route && (
+            <div style={{
+              position: 'absolute', bottom: '20px', left: '20px', right: '20px', zIndex: 1000,
+            }}>
+              <div className="hud-card" style={{ padding: '12px 18px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px', marginBottom: '8px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <span className="pulse-dot-green" />
+                    <strong style={{ color: 'var(--accent-emerald)', fontSize: '0.88rem' }}>
+                      ROUTE SIMULATION ACTIVE ({Math.round(simProgress)}% COMPLETED)
+                    </strong>
+                  </div>
+                  <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>
+                    Speed: <strong style={{ color: 'var(--primary-orange)' }}>{route.effective_speed_kmh} km/h</strong> • Approx {(route.eta_minutes * (1 - simProgress/100)).toFixed(1)} mins remaining
+                  </div>
+                </div>
+
+                {/* Simulation Progress Bar */}
+                <div style={{ width: '100%', height: '6px', background: 'var(--bg-elevated)', borderRadius: '3px', overflow: 'hidden' }}>
+                  <div style={{
+                    width: `${simProgress}%`, height: '100%',
+                    background: 'linear-gradient(90deg, #10b981, #00f0ff)',
+                    transition: 'width 0.1s linear'
+                  }} />
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Floating Click-to-Route Guide Pill */}
+          <div style={{
+            position: 'absolute', top: '16px', right: '80px', zIndex: 900,
+            background: 'var(--bg-card)', border: '1px solid var(--border-glass)',
+            padding: '6px 14px', borderRadius: '20px', fontSize: '0.74rem', fontWeight: 600,
+            boxShadow: '0 4px 16px rgba(0,0,0,0.4)', backdropFilter: 'blur(10px)',
+            display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-muted)'
+          }}>
+            <span>👆 Click Map:</span>
+            <span style={{ color: clickPoints.start ? 'var(--accent-emerald)' : 'var(--text-dim)' }}>
+              1st = Origin {clickPoints.start ? '✓' : ''}
+            </span>
+            <span>•</span>
+            <span style={{ color: clickPoints.end ? 'var(--accent-rose)' : 'var(--text-dim)' }}>
+              2nd = Dest {clickPoints.end ? '✓' : ''}
+            </span>
+          </div>
+        </div>
+      );
+    }
+
+    // --- Active Fleet Explorer Table Component ---
+    function BusTableComponent({ fleet, onTrackBus }) {
+      const [search, setSearch] = useState('');
+      const [statusFilter, setStatusFilter] = useState('ALL');
+      const [sortBy, setSortBy] = useState('speed_desc');
+      const [viewMode, setViewMode] = useState('table'); // table or cards
+
+      const filtered = useMemo(() => {
+        let list = fleet || [];
+        if (search.trim()) {
+          const q = search.trim().toLowerCase();
+          list = list.filter(b =>
+            b.bus_id.toLowerCase().includes(q) ||
+            b.route_id.toLowerCase().includes(q) ||
+            b.status.toLowerCase().includes(q)
+          );
+        }
+        if (statusFilter !== 'ALL') {
+          if (statusFilter === 'FAST') list = list.filter(b => b.speed >= 20);
+          else if (statusFilter === 'MODERATE') list = list.filter(b => b.speed >= 5 && b.speed < 20);
+          else if (statusFilter === 'SLOW') list = list.filter(b => b.speed < 5);
+        }
+
+        // Sorting
+        return [...list].sort((a, b) => {
+          if (sortBy === 'speed_desc') return (b.speed || 0) - (a.speed || 0);
+          if (sortBy === 'speed_asc') return (a.speed || 0) - (b.speed || 0);
+          if (sortBy === 'bus_id') return a.bus_id.localeCompare(b.bus_id);
+          if (sortBy === 'route') return a.route_id.localeCompare(b.route_id);
+          return 0;
+        });
+      }, [fleet, search, statusFilter, sortBy]);
+
+      return (
+        <div className="glass-panel" style={{ padding: '24px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '14px', marginBottom: '20px' }}>
+            <div>
+              <h2 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--primary-orange)' }}>
+                🚌 Active Delhi Transit Fleet Explorer
+              </h2>
+              <p style={{ fontSize: '0.82rem', color: 'var(--text-muted)', marginTop: '2px' }}>
+                Real-time GPS coordinates, velocity telemetry, and active corridor assignments
+              </p>
+            </div>
+
+            {/* Filter and Search Bar */}
+            <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', alignItems: 'center' }}>
+              <input
+                type="text"
+                placeholder="Search Bus ID or Route..."
+                value={search}
+                onChange={e => setSearch(e.target.value)}
+                style={{
+                  background: 'var(--bg-elevated)', color: 'var(--text-main)',
+                  border: '1px solid var(--border-subtle)', borderRadius: '8px',
+                  padding: '8px 14px', fontSize: '0.82rem', minWidth: '220px', outline: 'none'
+                }}
+              />
+
+              <div style={{ display: 'flex', background: 'var(--bg-elevated)', borderRadius: '8px', padding: '3px', border: '1px solid var(--border-glass)' }}>
+                {[
+                  { id: 'ALL', label: 'All' },
+                  { id: 'FAST', label: '🟢 Free Flow' },
+                  { id: 'MODERATE', label: '🟡 Moderate' },
+                  { id: 'SLOW', label: '🔴 Slow/Dwell' },
+                ].map(f => (
+                  <button
+                    key={f.id}
+                    onClick={() => setStatusFilter(f.id)}
+                    style={{
+                      background: statusFilter === f.id ? 'var(--primary-orange)' : 'transparent',
+                      color: statusFilter === f.id ? '#ffffff' : 'var(--text-muted)',
+                      border: 'none', padding: '5px 10px', borderRadius: '6px', fontSize: '0.74rem',
+                      fontWeight: 700, cursor: 'pointer'
+                    }}
+                  >
+                    {f.label}
+                  </button>
+                ))}
+              </div>
+
+              <select
+                value={sortBy}
+                onChange={e => setSortBy(e.target.value)}
+                style={{
+                  background: 'var(--bg-elevated)', color: 'var(--text-main)',
+                  border: '1px solid var(--border-glass)', borderRadius: '8px',
+                  padding: '8px 12px', fontSize: '0.82rem', fontWeight: 600, outline: 'none'
+                }}
+              >
+                <option value="speed_desc">⚡ Fastest First</option>
+                <option value="speed_asc">🐢 Slowest First</option>
+                <option value="bus_id">🔢 Bus ID</option>
+                <option value="route">🛣️ Route ID</option>
+              </select>
+
+              <button
+                onClick={() => setViewMode(viewMode === 'table' ? 'cards' : 'table')}
+                style={{
+                  background: 'var(--bg-elevated)', color: 'var(--text-main)',
+                  border: '1px solid var(--border-glass)', padding: '8px 12px',
+                  borderRadius: '8px', fontSize: '0.82rem', fontWeight: 700, cursor: 'pointer'
+                }}
+              >
+                {viewMode === 'table' ? '🗂️ Cards View' : '📋 Table View'}
+              </button>
             </div>
           </div>
 
-          <div style={{ overflowX: 'auto', maxHeight: '420px', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '8px' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.82rem', textAlign: 'left' }}>
-              <thead style={{ background: '#1e293b', position: 'sticky', top: 0 }}>
-                <tr>
-                  <th style={{ padding: '10px 14px', color: '#ff9933' }}>Bus ID</th>
-                  <th style={{ padding: '10px 14px', color: '#ff9933' }}>Route</th>
-                  <th style={{ padding: '10px 14px', color: '#ff9933' }}>Latitude</th>
-                  <th style={{ padding: '10px 14px', color: '#ff9933' }}>Longitude</th>
-                  <th style={{ padding: '10px 14px', color: '#ff9933', minWidth: '160px' }}>Velocity</th>
-                  <th style={{ padding: '10px 14px', color: '#ff9933' }}>Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                {rows.map((b, i) => {
-                  const spd = b.speed || 0;
-                  const c = spd >= 20 ? '#10b981' : (spd >= 5 ? '#f59e0b' : '#ef4444');
-                  return (
-                    <tr key={b.bus_id + i} style={{ borderBottom: '1px solid rgba(255,255,255,0.05)', background: i % 2 === 0 ? 'rgba(15, 23, 42, 0.4)' : 'transparent' }}>
-                      <td style={{ padding: '10px 14px', fontWeight: 700, fontFamily: "'JetBrains Mono', monospace" }}>{b.bus_id}</td>
-                      <td style={{ padding: '10px 14px', color: '#38bdf8' }}>{b.route_id}</td>
-                      <td style={{ padding: '10px 14px', color: '#94a3b8' }}>{b.lat.toFixed(4)}</td>
-                      <td style={{ padding: '10px 14px', color: '#94a3b8' }}>{b.lon.toFixed(4)}</td>
-                      <td style={{ padding: '10px 14px' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                          <span style={{ minWidth: '55px', fontWeight: 600, color: c }}>{spd.toFixed(1)} km/h</span>
-                          <div style={{ flex: 1, height: '6px', background: '#334155', borderRadius: '3px', overflow: 'hidden' }}>
-                            <div style={{ width: `${Math.min(100, (spd / 60) * 100)}%`, height: '100%', background: c }} />
+          <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '12px' }}>
+            Showing <strong>{filtered.length}</strong> active buses matching filters:
+          </div>
+
+          {viewMode === 'table' ? (
+            <div style={{ overflowX: 'auto', maxHeight: '560px', border: '1px solid var(--border-glass)', borderRadius: '10px' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.84rem' }}>
+                <thead style={{ background: 'var(--bg-elevated)', position: 'sticky', top: 0, zIndex: 10 }}>
+                  <tr>
+                    <th style={{ padding: '10px 14px', color: 'var(--primary-orange)' }}>Bus Unit</th>
+                    <th style={{ padding: '10px 14px', color: 'var(--primary-orange)' }}>Assigned Route</th>
+                    <th style={{ padding: '10px 14px', color: 'var(--primary-orange)' }}>Velocity (km/h)</th>
+                    <th style={{ padding: '10px 14px', color: 'var(--primary-orange)' }}>GPS Coordinates</th>
+                    <th style={{ padding: '10px 14px', color: 'var(--primary-orange)' }}>Status</th>
+                    <th style={{ padding: '10px 14px', color: 'var(--primary-orange)', textAlign: 'center' }}>Map Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filtered.slice(0, 100).map((b, idx) => {
+                    const spd = b.speed || 0;
+                    const c = spd >= 20 ? 'var(--accent-emerald)' : (spd >= 5 ? 'var(--accent-amber)' : 'var(--accent-rose)');
+                    return (
+                      <tr
+                        key={b.bus_id + idx}
+                        style={{
+                          borderBottom: '1px solid var(--border-glass)',
+                          background: idx % 2 === 0 ? 'transparent' : 'rgba(255, 255, 255, 0.015)'
+                        }}
+                      >
+                        <td style={{ padding: '10px 14px', fontWeight: 800, fontFamily: "'JetBrains Mono', monospace" }}>
+                          #{b.bus_id}
+                        </td>
+                        <td style={{ padding: '10px 14px' }}>
+                          <span style={{ background: 'rgba(56, 189, 248, 0.15)', color: 'var(--accent-cyan)', padding: '2px 8px', borderRadius: '6px', fontWeight: 700, fontSize: '0.78rem' }}>
+                            {b.route_id}
+                          </span>
+                        </td>
+                        <td style={{ padding: '10px 14px' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <div style={{ width: '50px', height: '6px', background: 'var(--bg-elevated)', borderRadius: '3px', overflow: 'hidden' }}>
+                              <div style={{ width: `${Math.min(100, (spd / 60) * 100)}%`, height: '100%', background: c }} />
+                            </div>
+                            <strong style={{ color: c }}>{spd.toFixed(1)} km/h</strong>
                           </div>
-                        </div>
-                      </td>
-                      <td style={{ padding: '10px 14px' }}>
-                        <span style={{ padding: '3px 8px', borderRadius: '12px', fontSize: '0.75rem', fontWeight: 600, background: `${c}20`, color: c, border: `1px solid ${c}40` }}>
-                          {b.status}
-                        </span>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
+                        </td>
+                        <td style={{ padding: '10px 14px', color: 'var(--text-dim)', fontFamily: "'JetBrains Mono', monospace", fontSize: '0.78rem' }}>
+                          {b.lat.toFixed(4)}, {b.lon.toFixed(4)}
+                        </td>
+                        <td style={{ padding: '10px 14px' }}>
+                          <span style={{ fontSize: '0.74rem', padding: '2px 8px', borderRadius: '10px', background: `${c}20`, color: c, fontWeight: 700 }}>
+                            {b.status}
+                          </span>
+                        </td>
+                        <td style={{ padding: '10px 14px', textAlign: 'center' }}>
+                          <button
+                            onClick={() => onTrackBus(b.bus_id)}
+                            style={{
+                              background: 'rgba(255, 107, 53, 0.15)', border: '1px solid var(--border-subtle)',
+                              color: 'var(--primary-orange)', padding: '4px 10px', borderRadius: '6px',
+                              fontSize: '0.74rem', fontWeight: 700, cursor: 'pointer'
+                            }}
+                          >
+                            📍 Track
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '14px', maxHeight: '560px', overflowY: 'auto' }}>
+              {filtered.slice(0, 100).map((b, idx) => {
+                const spd = b.speed || 0;
+                const c = spd >= 20 ? 'var(--accent-emerald)' : (spd >= 5 ? 'var(--accent-amber)' : 'var(--accent-rose)');
+                return (
+                  <div key={b.bus_id + idx} className="glass-panel" style={{ padding: '14px', border: '1px solid var(--border-glass)' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                      <strong style={{ fontSize: '0.94rem', color: 'var(--text-main)', fontFamily: "'JetBrains Mono', monospace" }}>#{b.bus_id}</strong>
+                      <span style={{ background: 'rgba(56, 189, 248, 0.15)', color: 'var(--accent-cyan)', padding: '2px 8px', borderRadius: '6px', fontWeight: 700, fontSize: '0.74rem' }}>
+                        Route {b.route_id}
+                      </span>
+                    </div>
+                    <div style={{ fontSize: '1.2rem', fontWeight: 800, color: c, marginBottom: '6px' }}>
+                      {spd.toFixed(1)} km/h
+                    </div>
+                    <div style={{ fontSize: '0.74rem', color: 'var(--text-dim)', marginBottom: '10px' }}>
+                      GPS: {b.lat.toFixed(4)}, {b.lon.toFixed(4)} • {b.status}
+                    </div>
+                    <button
+                      onClick={() => onTrackBus(b.bus_id)}
+                      style={{
+                        width: '100%', background: 'rgba(255, 107, 53, 0.15)', border: '1px solid var(--border-subtle)',
+                        color: 'var(--primary-orange)', padding: '6px', borderRadius: '6px', fontSize: '0.78rem',
+                        fontWeight: 700, cursor: 'pointer'
+                      }}
+                    >
+                      📍 Track on Map
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </div>
       );
     }
 
-    // Predictions Component
-    function PredictionsComponent({ predictions }) {
+    // --- AI Traffic Congestion Forecaster Component ---
+    function PredictionsComponent({ predictions, timeOffsetMinutes, setTimeOffsetMinutes }) {
+      const [filter, setFilter] = useState('');
+
+      const filtered = useMemo(() => {
+        if (!filter.trim()) return predictions || [];
+        return (predictions || []).filter(p =>
+          p.road_name.toLowerCase().includes(filter.toLowerCase()) ||
+          p.road_type.toLowerCase().includes(filter.toLowerCase())
+        );
+      }, [predictions, filter]);
+
       return (
-        <div className="glass-panel" style={{ padding: '20px', marginTop: '20px' }}>
-          <h2 style={{ fontSize: '1.2rem', fontWeight: 700, color: '#f1f5f9', marginBottom: '4px' }}>🔮 ML Traffic Velocity Forecasting</h2>
-          <p style={{ fontSize: '0.82rem', color: '#94a3b8', marginBottom: '16px' }}>Gradient Boosting Regressor forecasting Delhi arterial speeds 30 & 60 minutes into the future</p>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: '12px' }}>
-            {predictions.slice(0, 15).map((p, i) => (
-              <div key={i} style={{ background: 'rgba(30, 41, 59, 0.5)', border: '1px solid rgba(255, 255, 255, 0.08)', borderRadius: '10px', padding: '12px 14px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-                  <strong style={{ fontSize: '0.85rem' }}>{p.road_name}</strong>
-                  <span style={{ fontSize: '0.7rem', color: '#ff9933' }}>{p.road_type}</span>
+        <div className="glass-panel" style={{ padding: '24px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '14px', marginBottom: '20px' }}>
+            <div>
+              <h2 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--primary-orange)' }}>
+                🔮 Predictive ML Congestion & Velocity Forecasting
+              </h2>
+              <p style={{ fontSize: '0.82rem', color: 'var(--text-muted)', marginTop: '2px' }}>
+                Gradient Boosting model predicting Delhi road speeds 30 and 60 minutes into the future
+              </p>
+            </div>
+
+            <input
+              type="text"
+              placeholder="Search corridor or road..."
+              value={filter}
+              onChange={e => setFilter(e.target.value)}
+              style={{
+                background: 'var(--bg-elevated)', color: 'var(--text-main)',
+                border: '1px solid var(--border-subtle)', borderRadius: '8px',
+                padding: '8px 14px', fontSize: '0.82rem', minWidth: '220px', outline: 'none'
+              }}
+            />
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '14px' }}>
+            {filtered.map((p, idx) => {
+              const diff = p.forecast_30m_kmh - p.current_speed_kmh;
+              const isUp = diff >= 1.5;
+              const isDown = diff <= -1.5;
+              const trendColor = isUp ? 'var(--accent-emerald)' : (isDown ? 'var(--accent-rose)' : 'var(--accent-cyan)');
+
+              return (
+                <div key={idx} className="glass-panel" style={{ padding: '16px', border: '1px solid var(--border-glass)' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                    <strong style={{ fontSize: '0.94rem', color: 'var(--text-main)' }}>{p.road_name}</strong>
+                    <span style={{ fontSize: '0.7rem', color: 'var(--text-dim)', background: 'var(--bg-elevated)', padding: '2px 6px', borderRadius: '4px' }}>
+                      {p.road_type}
+                    </span>
+                  </div>
+
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px', margin: '12px 0', textAlign: 'center' }}>
+                    <div>
+                      <span style={{ fontSize: '0.68rem', color: 'var(--text-dim)' }}>CURRENT</span>
+                      <div style={{ fontSize: '1.1rem', fontWeight: 800, color: 'var(--text-main)' }}>
+                        {p.current_speed_kmh} <span style={{ fontSize: '0.7rem' }}>km/h</span>
+                      </div>
+                    </div>
+                    <div>
+                      <span style={{ fontSize: '0.68rem', color: 'var(--text-dim)' }}>+30 MINS</span>
+                      <div style={{ fontSize: '1.1rem', fontWeight: 800, color: trendColor }}>
+                        {p.forecast_30m_kmh} <span style={{ fontSize: '0.7rem' }}>km/h</span>
+                      </div>
+                    </div>
+                    <div>
+                      <span style={{ fontSize: '0.68rem', color: 'var(--text-dim)' }}>+60 MINS</span>
+                      <div style={{ fontSize: '1.1rem', fontWeight: 800, color: 'var(--accent-amber)' }}>
+                        {p.forecast_60m_kmh} <span style={{ fontSize: '0.7rem' }}>km/h</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.75rem', paddingTop: '8px', borderTop: '1px solid var(--border-glass)' }}>
+                    <span style={{ color: 'var(--text-muted)' }}>Trend:</span>
+                    <span style={{ fontWeight: 800, color: trendColor }}>
+                      {isUp ? '🚀 Accelerating (+)' : (isDown ? '⚠️ Slowing Down (-)' : '➡️ Steady Velocity')}
+                    </span>
+                  </div>
                 </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.78rem' }}>
-                  <span>Now: <b>{p.current_speed_kmh} km/h</b></span>
-                  <span style={{ color: '#38bdf8' }}>+30m: <b>{p.forecast_30m_kmh} km/h</b></span>
-                  <span style={{ color: p.trend === 'Speeding Up' ? '#10b981' : (p.trend === 'Slowing Down' ? '#ef4444' : '#94a3b8'), fontWeight: 600 }}>{p.trend}</span>
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       );
     }
 
-    
-    // Alerts & Bunching Component
-    function AlertsComponent({ alerts }) {
+    // --- Transit Alerts & Bunching Dispatcher Component ---
+    function AlertsComponent({ alerts, onResolveBunching }) {
       const bnecks = alerts.bottlenecks || [];
       const bunch = alerts.bunching || [];
 
       return (
-        <div className="glass-panel" style={{ padding: '24px', marginTop: '20px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', flexWrap: 'wrap', gap: '10px' }}>
-            <div>
-              <h2 style={{ fontSize: '1.25rem', fontWeight: 700, color: '#f1f5f9' }}>
-                🚨 Transit Congestion & Fleet Bunching Feed
-              </h2>
-              <p style={{ fontSize: '0.82rem', color: '#94a3b8' }}>
-                Real-time bottleneck detection & automated headway gap restoration algorithms
-              </p>
-            </div>
-            <div style={{ fontSize: '0.75rem', color: '#64748b', background: '#1e293b', padding: '6px 12px', borderRadius: '8px' }}>
-              Last scan: {alerts.timestamp || 'Live'}
-            </div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+          {/* Critical Bottlenecks Section */}
+          <div className="glass-panel" style={{ padding: '24px' }}>
+            <h2 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--accent-rose)', marginBottom: '4px' }}>
+              🚨 Active Bottlenecks & Gridlocks ({bnecks.length})
+            </h2>
+            <p style={{ fontSize: '0.82rem', color: 'var(--text-muted)', marginBottom: '16px' }}>
+              Identified road choke points where bus telemetry indicates velocity dropped below threshold
+            </p>
+
+            {bnecks.length > 0 ? (
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '14px' }}>
+                {bnecks.map((b, idx) => (
+                  <div key={idx} className="glass-panel" style={{ padding: '16px', border: '1px solid rgba(239, 68, 68, 0.35)' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                      <strong style={{ fontSize: '0.94rem', color: 'var(--text-main)' }}>{b.road_name}</strong>
+                      <span style={{
+                        background: b.severity === 'CRITICAL' ? 'rgba(239, 68, 68, 0.2)' : 'rgba(245, 158, 11, 0.2)',
+                        color: b.severity === 'CRITICAL' ? 'var(--accent-rose)' : 'var(--accent-amber)',
+                        padding: '2px 8px', borderRadius: '10px', fontSize: '0.7rem', fontWeight: 800
+                      }}>
+                        {b.severity}
+                      </span>
+                    </div>
+                    <div style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--accent-rose)', margin: '4px 0' }}>
+                      {b.speed_kmh} km/h
+                    </div>
+                    <div style={{ fontSize: '0.76rem', color: 'var(--text-muted)', marginBottom: '6px' }}>
+                      Delay Factor: <strong style={{ color: 'var(--primary-orange)' }}>{b.delay_factor}x normal travel time</strong>
+                    </div>
+                    <div style={{ fontSize: '0.74rem', color: 'var(--text-dim)' }}>
+                      Recommendation: Divert dynamic routing around {b.road_name}.
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div style={{ padding: '20px', textAlign: 'center', color: 'var(--accent-emerald)', fontWeight: 700 }}>
+                ✅ No critical bottlenecks detected across the Delhi bus road network!
+              </div>
+            )}
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', alignItems: 'start' }}>
-            {/* Left Column: Arterial Bottlenecks */}
-            <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-                <span style={{ fontSize: '1.1rem' }}>🛑</span>
-                <h3 style={{ fontSize: '0.98rem', fontWeight: 700, color: '#ef4444' }}>
-                  Arterial Bottlenecks ({bnecks.length})
-                </h3>
-              </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', maxHeight: '520px', overflowY: 'auto' }}>
-                {bnecks.map((b, i) => (
-                  <div key={i} style={{
-                    background: 'rgba(239, 68, 68, 0.08)', border: '1px solid rgba(239, 68, 68, 0.3)',
-                    borderRadius: '8px', padding: '12px 14px'
-                  }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
-                      <strong style={{ fontSize: '0.88rem', color: '#f87171' }}>{b.road_name}</strong>
-                      <span style={{
-                        fontSize: '0.7rem', fontWeight: 700, padding: '2px 8px', borderRadius: '12px',
-                        background: '#ef444430', color: '#f87171', border: '1px solid #ef444450'
-                      }}>
-                        {b.congestion_level.toUpperCase()}
-                      </span>
-                    </div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.78rem', color: '#94a3b8', marginTop: '6px' }}>
-                      <span>Speed: <b style={{ color: '#f87171' }}>{b.speed_kmh} km/h</b> (Free flow: {b.free_flow_kmh} km/h)</span>
-                      <span>Delay: <b style={{ color: '#fbbf24' }}>+{b.delay_index}x</b></span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
+          {/* Fleet Bunching (Clumping) & Dispatcher Tool */}
+          <div className="glass-panel" style={{ padding: '24px' }}>
+            <h2 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--primary-orange)', marginBottom: '4px' }}>
+              🚌 Bus Fleet Bunching & Headway Irregularities ({bunch.length})
+            </h2>
+            <p style={{ fontSize: '0.82rem', color: 'var(--text-muted)', marginBottom: '16px' }}>
+              Pairs of buses on identical routes running &lt; 350m apart (bus clumping degrades commuter waiting experience)
+            </p>
 
-            {/* Right Column: Fleet Bunching */}
-            <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-                <span style={{ fontSize: '1.1rem' }}>⚠️</span>
-                <h3 style={{ fontSize: '0.98rem', fontWeight: 700, color: '#f59e0b' }}>
-                  Fleet Bunching / "Bus Clumping" ({bunch.length})
-                </h3>
-              </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', maxHeight: '520px', overflowY: 'auto' }}>
-                {bunch.slice(0, 50).map((clump, i) => (
-                  <div key={i} style={{
-                    background: 'rgba(245, 158, 11, 0.08)', border: '1px solid rgba(245, 158, 11, 0.3)',
-                    borderRadius: '8px', padding: '12px 14px'
-                  }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
-                      <strong style={{ fontSize: '0.88rem', color: '#fbbf24' }}>Route {clump.route_id}</strong>
-                      <span style={{
-                        fontSize: '0.72rem', fontWeight: 700, color: '#f59e0b', background: '#f59e0b25',
-                        padding: '2px 8px', borderRadius: '10px'
-                      }}>
-                        Headway Gap: {clump.gap_meters || clump.distance_m}m
+            {bunch.length > 0 ? (
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '14px' }}>
+                {bunch.map((b, idx) => (
+                  <div key={idx} className="glass-panel" style={{ padding: '16px', border: '1px solid var(--border-subtle)' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                      <span style={{ background: 'rgba(255, 107, 53, 0.15)', color: 'var(--primary-orange)', padding: '2px 8px', borderRadius: '6px', fontWeight: 800, fontSize: '0.78rem' }}>
+                        Route {b.route_id}
+                      </span>
+                      <span style={{ fontSize: '0.76rem', fontWeight: 800, color: 'var(--accent-rose)' }}>
+                        Gap: {b.gap_meters}m
                       </span>
                     </div>
-                    <div style={{ fontSize: '0.78rem', color: '#cbd5e1', marginTop: '4px' }}>
-                      Clumped units: <b>#{clump.bus_1 || clump.bus_1_id}</b> & <b>#{clump.bus_2 || clump.bus_2_id}</b>
+
+                    <div style={{ fontSize: '0.88rem', fontWeight: 700, color: 'var(--text-main)', margin: '8px 0' }}>
+                      Buses #{b.bus_1} and #{b.bus_2} clumped together
                     </div>
-                    <div style={{ fontSize: '0.73rem', color: '#38bdf8', marginTop: '6px', background: 'rgba(56, 189, 248, 0.1)', padding: '5px 8px', borderRadius: '6px' }}>
-                      💡 <b>Dispatch Action:</b> {clump.recommendation}
+
+                    <div style={{ fontSize: '0.76rem', color: 'var(--text-muted)', marginBottom: '12px' }}>
+                      {b.recommendation}
                     </div>
+
+                    <button
+                      onClick={() => onResolveBunching(b.route_id)}
+                      style={{
+                        width: '100%', background: 'linear-gradient(135deg, #FF6B35 0%, #e85d04 100%)',
+                        color: '#fff', border: 'none', padding: '8px', borderRadius: '8px',
+                        fontSize: '0.78rem', fontWeight: 700, cursor: 'pointer',
+                        boxShadow: '0 4px 12px rgba(255, 107, 53, 0.3)'
+                      }}
+                    >
+                      🚨 Dispatch Headway Hold Order (Hold 4 Mins)
+                    </button>
                   </div>
                 ))}
               </div>
-            </div>
+            ) : (
+              <div style={{ padding: '20px', textAlign: 'center', color: 'var(--accent-emerald)', fontWeight: 700 }}>
+                ✅ All bus routes maintain healthy headway spacing. Zero bunching observed!
+              </div>
+            )}
           </div>
         </div>
       );
     }
 
-    
-    // Branch Map Container (Leaflet)
+    // --- Branch Map Container (Leaflet) ---
     function BranchMapContainer({ origin, destination, branches, selectedBranchId, onSelectBranch }) {
       const bMapRef = useRef(null);
       const bInstanceRef = useRef(null);
@@ -1341,13 +2408,12 @@
         const bmap = L.map(bMapRef.current, { center: [28.6139, 77.2090], zoom: 12 });
         bInstanceRef.current = bmap;
 
-        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
           maxZoom: 19,
-          attribution: '&copy; OpenStreetMap contributors',
+          attribution: '&copy; CARTO & OpenStreetMap',
         }).addTo(bmap);
 
         bLayerGroup.current = L.layerGroup().addTo(bmap);
-
         setTimeout(() => { if (bmap) bmap.invalidateSize(); }, 250);
 
         return () => {
@@ -1357,7 +2423,7 @@
         };
       }, []);
 
-      // Draw Branches, Origin, Destination & All Buses
+      // Draw Branches
       useEffect(() => {
         const bmap = bInstanceRef.current;
         if (!bmap || !bLayerGroup.current || !origin || !destination) return;
@@ -1365,7 +2431,7 @@
 
         const allBounds = [];
 
-        // 1. Origin Marker
+        // Origin Marker
         const oLatLon = [origin.lat, origin.lon];
         allBounds.push(oLatLon);
         const oHtml = `
@@ -1376,9 +2442,8 @@
             <div style="width: 0; height: 0; border-left: 6px solid transparent; border-right: 6px solid transparent; border-top: 8px solid #059669;"></div>
           </div>`;
         L.marker(oLatLon, { icon: L.divIcon({ className: 'b-o-pin', html: oHtml, iconSize: [0, 0] }) }).addTo(bLayerGroup.current);
-        L.circleMarker(oLatLon, { radius: 7, fillColor: '#10b981', color: '#fff', weight: 2.5, fillOpacity: 1 }).addTo(bLayerGroup.current);
 
-        // 2. Destination Marker
+        // Destination Marker
         const dLatLon = [destination.lat, destination.lon];
         allBounds.push(dLatLon);
         const dHtml = `
@@ -1389,9 +2454,8 @@
             <div style="width: 0; height: 0; border-left: 6px solid transparent; border-right: 6px solid transparent; border-top: 8px solid #dc2626;"></div>
           </div>`;
         L.marker(dLatLon, { icon: L.divIcon({ className: 'b-d-pin', html: dHtml, iconSize: [0, 0] }) }).addTo(bLayerGroup.current);
-        L.circleMarker(dLatLon, { radius: 7, fillColor: '#ef4444', color: '#fff', weight: 2.5, fillOpacity: 1 }).addTo(bLayerGroup.current);
 
-        // 3. Draw Branches and their Buses
+        // Branches
         (branches || []).forEach(branch => {
           const isSelected = selectedBranchId === 'ALL' || selectedBranchId === branch.branch_id;
           const opacity = isSelected ? 0.95 : 0.25;
@@ -1399,105 +2463,48 @@
 
           if (branch.coordinates && branch.coordinates.length > 1) {
             const poly = L.polyline(branch.coordinates, {
-              color: branch.color,
+              color: branch.color || '#ff6b35',
               weight: weight,
               opacity: opacity,
-              dashArray: branch.branch_id === 'BR_ALPHA' ? null : '6 4',
-            }).addTo(bLayerGroup.current);
-
-            poly.bindPopup(`
-              <div style="font-family: inherit; padding: 2px;">
-                <b style="color: ${branch.color}; font-size: 13px;">${branch.name}</b><br/>
-                <span style="font-size: 11px; color: #cbd5e1;">Via: ${branch.via}</span><br/>
-                <span style="font-size: 11px; color: #94a3b8;">Active Buses: <b>${branch.total_active_buses}</b> | Speed: <b>${branch.corridor_speed_kmh} km/h</b></span>
-              </div>
-            `);
+              dashArray: isSelected ? null : '6 6',
+            });
+            poly.bindPopup(`<b>${branch.name}</b><br/>Via: ${branch.via}<br/>Active Buses: ${branch.total_active_buses}`);
+            poly.on('click', () => onSelectBranch(branch.branch_id));
+            poly.addTo(bLayerGroup.current);
 
             branch.coordinates.forEach(c => allBounds.push(c));
           }
-
-          // Plot active buses for this branch
-          if (isSelected) {
-            (branch.buses || []).forEach(bus => {
-              const bMarker = L.circleMarker([bus.lat, bus.lon], {
-                radius: 7,
-                fillColor: branch.color,
-                color: '#ffffff',
-                weight: 2,
-                fillOpacity: 0.95,
-              });
-
-              bMarker.bindPopup(`
-                <div style="font-family: inherit; min-width: 170px; padding: 2px;">
-                  <div style="font-weight: 700; color: ${branch.color}; font-size: 13px;">🚌 Bus #${bus.bus_id}</div>
-                  <div style="font-size: 11px; color: #94a3b8; margin: 2px 0 6px 0;">Route: <b>${bus.route_id}</b> | Branch: <b>${branch.name.split(':')[0]}</b></div>
-                  <div style="background: rgba(15, 23, 42, 0.8); padding: 6px 8px; border-radius: 6px; font-size: 11px; line-height: 1.5;">
-                    <div>Velocity: <b style="color: #10b981;">${bus.speed_kmh} km/h</b></div>
-                    <div>Progress: <b>${bus.progress_pct}%</b> along corridor</div>
-                    <div>Distance to Dest: <b>${bus.dist_to_destination_km} km</b></div>
-                    <div>ETA to Destination: <b style="color: #ff9933;">${bus.eta_to_dest_mins} mins</b></div>
-                    <div style="color: #38bdf8; font-weight: 600; margin-top: 2px;">Status: ${bus.status}</div>
-                  </div>
-                </div>
-              `);
-
-              bMarker.addTo(bLayerGroup.current);
-            });
-          }
         });
 
-        if (allBounds.length > 0) {
-          bmap.fitBounds(allBounds, { padding: [50, 50] });
+        if (allBounds.length > 1) {
+          bmap.fitBounds(L.latLngBounds(allBounds), { padding: [40, 40] });
         }
       }, [origin, destination, branches, selectedBranchId]);
 
       return (
-        <div style={{ position: 'relative', width: '100%', height: '540px', borderRadius: '12px', overflow: 'hidden', border: '1px solid rgba(255, 107, 53, 0.3)' }}>
+        <div style={{ position: 'relative', width: '100%', height: '400px', borderRadius: '12px', overflow: 'hidden' }}>
           <div ref={bMapRef} style={{ width: '100%', height: '100%' }} />
-          <div style={{
-            position: 'absolute', bottom: '16px', right: '16px', background: 'rgba(15, 23, 42, 0.92)',
-            border: '1px solid rgba(255, 255, 255, 0.15)', borderRadius: '10px', padding: '10px 14px',
-            backdropFilter: 'blur(10px)', zIndex: 1000, fontSize: '11px', minWidth: '180px'
-          }}>
-            <b style={{ color: '#ff9933', display: 'block', marginBottom: '6px' }}>🔀 CORRIDOR BRANCHES</b>
-            {(branches || []).map(b => (
-              <div key={b.branch_id} style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px', cursor: 'pointer' }} onClick={() => onSelectBranch(b.branch_id)}>
-                <span style={{ width: '12px', height: '12px', borderRadius: '50%', background: b.color, display: 'inline-block' }} />
-                <span style={{ color: '#f1f5f9', fontWeight: 600 }}>{b.name.split(':')[0]}</span>
-                <span style={{ color: '#94a3b8', marginLeft: 'auto' }}>({b.total_active_buses} buses)</span>
-              </div>
-            ))}
-          </div>
         </div>
       );
     }
 
-    // Main Multi-Route Corridor & Bus Branching Component
-    function CorridorBranchingComponent({ stops, origin, destination, setOrigin, setDestination, branchData, loading, onRefresh }) {
+    // --- Corridor Branching Component ---
+    function CorridorBranchingComponent({
+      stops, origin, destination, setOrigin, setDestination, branchData, loading, onRefresh
+    }) {
       const [selectedBranchId, setSelectedBranchId] = useState('ALL');
 
-      const handleSwap = () => {
-        const temp = origin;
-        setOrigin(destination);
-        setDestination(temp);
-      };
-
       const branches = branchData?.branches || [];
-      const recommended = branches[0];
 
       return (
-        <div className="glass-panel" style={{ padding: '24px', marginTop: '20px' }}>
-          {/* Header Controls */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px', marginBottom: '20px' }}>
+        <div className="glass-panel" style={{ padding: '24px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '14px', marginBottom: '20px' }}>
             <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <span style={{ fontSize: '1.5rem' }}>🔀</span>
-                <h2 style={{ fontSize: '1.4rem', fontWeight: 800, color: '#f1f5f9' }}>
-                  Multi-Route Corridor & Bus Branching Engine
-                </h2>
-              </div>
-              <p style={{ fontSize: '0.84rem', color: '#94a3b8', marginTop: '4px' }}>
-                Reads every Delhi bus route, groups parallel transit corridors into branches, and tracks all live buses running between 2 points in real-time
+              <h2 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--primary-orange)' }}>
+                🔀 Multi-Route Corridor & Alternate Bus Branching
+              </h2>
+              <p style={{ fontSize: '0.82rem', color: 'var(--text-muted)', marginTop: '2px' }}>
+                Compare parallel corridor branches, headway frequencies, and active buses in transit
               </p>
             </div>
 
@@ -1507,315 +2514,186 @@
               style={{
                 background: 'linear-gradient(135deg, #FF6B35 0%, #e85d04 100%)',
                 color: '#fff', border: 'none', padding: '8px 16px', borderRadius: '8px',
-                fontWeight: 600, fontSize: '0.85rem', cursor: loading ? 'not-allowed' : 'pointer'
+                fontWeight: 700, fontSize: '0.82rem', cursor: loading ? 'not-allowed' : 'pointer'
               }}
             >
-              {loading ? 'Analyzing Corridors...' : '🔄 Recalculate Live Branches'}
+              {loading ? 'Analyzing...' : '🔄 Re-Analyze Branches'}
             </button>
           </div>
 
-          {/* OD Selection Bar */}
-          <div style={{
-            background: 'rgba(15, 23, 42, 0.75)', border: '1px solid rgba(255, 107, 53, 0.35)',
-            borderRadius: '12px', padding: '16px 20px', marginBottom: '20px'
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
-              <div style={{ flex: 1, minWidth: '220px' }}>
-                <label style={{ fontSize: '0.75rem', fontWeight: 700, color: '#10b981', display: 'block', marginBottom: '4px' }}>
-                  🟢 POINT A (ORIGIN)
-                </label>
-                <select
-                  value={origin}
-                  onChange={e => setOrigin(e.target.value)}
-                  style={{ width: '100%', background: '#0f172a', color: '#f1f5f9', border: '1px solid rgba(16, 185, 129, 0.4)', borderRadius: '8px', padding: '10px 12px', fontWeight: 600 }}
-                >
-                  {stops.map(s => <option key={s.stop_id} value={s.name}>{s.name}</option>)}
-                </select>
-              </div>
-
-              <button
-                onClick={handleSwap}
-                title="Swap Origin and Destination"
-                style={{
-                  background: 'rgba(30, 41, 59, 0.8)', border: '1px solid rgba(255, 255, 255, 0.2)',
-                  color: '#ff9933', width: '40px', height: '40px', borderRadius: '50%',
-                  cursor: 'pointer', fontSize: '1.1rem', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  alignSelf: 'flex-end', marginBottom: '2px'
-                }}
-              >
-                ⇄
-              </button>
-
-              <div style={{ flex: 1, minWidth: '220px' }}>
-                <label style={{ fontSize: '0.75rem', fontWeight: 700, color: '#ef4444', display: 'block', marginBottom: '4px' }}>
-                  🔴 POINT B (DESTINATION)
-                </label>
-                <select
-                  value={destination}
-                  onChange={e => setDestination(e.target.value)}
-                  style={{ width: '100%', background: '#0f172a', color: '#f1f5f9', border: '1px solid rgba(239, 68, 68, 0.4)', borderRadius: '8px', padding: '10px 12px', fontWeight: 600 }}
-                >
-                  {stops.map(s => <option key={s.stop_id} value={s.name}>{s.name}</option>)}
-                </select>
-              </div>
-            </div>
-
-            {/* Quick 1-Click Delhi OD Presets */}
-            <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginTop: '12px', flexWrap: 'wrap' }}>
-              <span style={{ fontSize: '0.75rem', color: '#94a3b8', fontWeight: 600 }}>Quick Delhi Pairs:</span>
-              {[
-                { label: '🏢 CP ➔ AIIMS', o: 'Connaught Place', d: 'AIIMS' },
-                { label: '✈️ Dwarka ➔ CP', o: 'Dwarka Sec-21', d: 'Connaught Place' },
-                { label: '🏰 Rohini ➔ AIIMS', o: 'Rohini Sec-3', d: 'AIIMS' },
-                { label: '🌉 ISBT ➔ Anand Vihar', o: 'ISBT Kashmere Gate', d: 'Anand Vihar ISBT' },
-                { label: '🏛️ Janakpuri ➔ ITO', o: 'Janakpuri', d: 'ITO' },
-              ].map((p, idx) => (
-                <button
-                  key={idx}
-                  onClick={() => { setOrigin(p.o); setDestination(p.d); }}
-                  style={{
-                    background: (origin === p.o && destination === p.d) ? 'rgba(255, 107, 53, 0.35)' : 'rgba(30, 41, 59, 0.6)',
-                    border: `1px solid ${(origin === p.o && destination === p.d) ? '#ff6b35' : 'rgba(255, 255, 255, 0.08)'}`,
-                    color: (origin === p.o && destination === p.d) ? '#ff9933' : '#cbd5e1',
-                    padding: '4px 10px', borderRadius: '6px', fontSize: '0.74rem', fontWeight: 600, cursor: 'pointer'
-                  }}
-                >
-                  {p.label}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* High-Level Corridor Branching KPI Banner */}
-          {branchData && (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))', gap: '14px', marginBottom: '20px' }}>
-              <div style={{ background: 'rgba(15, 23, 42, 0.6)', border: '1px solid rgba(255, 255, 255, 0.08)', borderRadius: '10px', padding: '14px 18px' }}>
-                <span style={{ fontSize: '0.72rem', color: '#94a3b8', fontWeight: 700 }}>BUSES RUNNING IN BETWEEN</span>
-                <div style={{ fontSize: '1.6rem', fontWeight: 800, color: '#38bdf8', fontFamily: "'JetBrains Mono', monospace", marginTop: '4px' }}>
-                  {branchData.total_buses_in_transit} buses
-                </div>
-                <span style={{ fontSize: '0.74rem', color: '#64748b' }}>Live GPS tracked in corridor</span>
-              </div>
-
-              <div style={{ background: 'rgba(15, 23, 42, 0.6)', border: '1px solid rgba(255, 255, 255, 0.08)', borderRadius: '10px', padding: '14px 18px' }}>
-                <span style={{ fontSize: '0.72rem', color: '#94a3b8', fontWeight: 700 }}>CORRIDOR BRANCHES</span>
-                <div style={{ fontSize: '1.6rem', fontWeight: 800, color: '#a855f7', fontFamily: "'JetBrains Mono', monospace", marginTop: '4px' }}>
-                  {branchData.total_branches} branches
-                </div>
-                <span style={{ fontSize: '0.74rem', color: '#64748b' }}>Clustered parallel transit lines</span>
-              </div>
-
-              <div style={{ background: 'rgba(15, 23, 42, 0.6)', border: '1px solid rgba(255, 255, 255, 0.08)', borderRadius: '10px', padding: '14px 18px' }}>
-                <span style={{ fontSize: '0.72rem', color: '#94a3b8', fontWeight: 700 }}>RECOMMENDED FASTEST BRANCH</span>
-                <div style={{ fontSize: '1.1rem', fontWeight: 800, color: '#10b981', marginTop: '4px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                  {recommended ? recommended.name.split(':')[0] : 'N/A'}
-                </div>
-                <span style={{ fontSize: '0.74rem', color: '#34d399' }}>Next bus in ~{recommended?.next_bus_eta_mins} mins</span>
-              </div>
-
-              <div style={{ background: 'rgba(15, 23, 42, 0.6)', border: '1px solid rgba(255, 255, 255, 0.08)', borderRadius: '10px', padding: '14px 18px' }}>
-                <span style={{ fontSize: '0.72rem', color: '#94a3b8', fontWeight: 700 }}>DIRECT DISPLACEMENT</span>
-                <div style={{ fontSize: '1.6rem', fontWeight: 800, color: '#ff9933', fontFamily: "'JetBrains Mono', monospace", marginTop: '4px' }}>
-                  {branchData.direct_distance_km} km
-                </div>
-                <span style={{ fontSize: '0.74rem', color: '#64748b' }}>Great-circle point-to-point</span>
-              </div>
-            </div>
-          )}
-
-          {/* Interactive Map Visualizer */}
-          <div style={{ marginBottom: '24px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px', flexWrap: 'wrap', gap: '10px' }}>
-              <div style={{ fontSize: '0.92rem', fontWeight: 700, color: '#ff9933' }}>
-                🗺️ Live Multi-Branch Corridor Map
-              </div>
-
-              {/* Branch Filter Tabs */}
-              <div style={{ display: 'flex', gap: '6px' }}>
-                <button
-                  onClick={() => setSelectedBranchId('ALL')}
-                  style={{
-                    background: selectedBranchId === 'ALL' ? '#ff6b35' : '#1e293b',
-                    color: '#fff', border: 'none', padding: '5px 12px', borderRadius: '6px', fontSize: '0.76rem', fontWeight: 700, cursor: 'pointer'
-                  }}
-                >
-                  All Branches ({branchData?.total_buses_in_transit || 0})
-                </button>
-                {branches.map(b => (
-                  <button
-                    key={b.branch_id}
-                    onClick={() => setSelectedBranchId(b.branch_id)}
-                    style={{
-                      background: selectedBranchId === b.branch_id ? b.color : 'rgba(30, 41, 59, 0.8)',
-                      color: selectedBranchId === b.branch_id ? '#0f172a' : '#cbd5e1',
-                      border: `1px solid ${b.color}40`,
-                      padding: '5px 12px', borderRadius: '6px', fontSize: '0.76rem', fontWeight: 700, cursor: 'pointer'
-                    }}
-                  >
-                    {b.name.split(':')[0]} ({b.total_active_buses})
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <BranchMapContainer
-              origin={branchData?.origin}
-              destination={branchData?.destination}
-              branches={branches}
-              selectedBranchId={selectedBranchId}
-              onSelectBranch={setSelectedBranchId}
+          {/* Origin and Destination Pickers */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px', marginBottom: '20px' }}>
+            <StopAutocomplete
+              label="🟢 Origin Point A"
+              value={origin}
+              onChange={setOrigin}
+              stops={stops}
+              placeholder="Origin stop..."
+              icon="🟢"
+            />
+            <StopAutocomplete
+              label="🔴 Destination Point B"
+              value={destination}
+              onChange={setDestination}
+              stops={stops}
+              placeholder="Destination stop..."
+              icon="🔴"
             />
           </div>
 
-          {/* Branched Route Families & Active Buses Cards */}
-          <div>
-            <div style={{ fontSize: '1.1rem', fontWeight: 800, color: '#f1f5f9', marginBottom: '14px' }}>
-              🚍 Branched Corridor Families & Buses Running in Between
+          {/* Branch Map View */}
+          {branchData && (
+            <div style={{ marginBottom: '20px' }}>
+              <BranchMapContainer
+                origin={branchData.origin}
+                destination={branchData.destination}
+                branches={branches}
+                selectedBranchId={selectedBranchId}
+                onSelectBranch={setSelectedBranchId}
+              />
             </div>
+          )}
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-              {branches.filter(b => selectedBranchId === 'ALL' || selectedBranchId === b.branch_id).map(branch => (
-                <div key={branch.branch_id} style={{
-                  background: 'rgba(15, 23, 42, 0.7)',
-                  border: `1px solid ${branch.color}60`,
-                  borderLeft: `6px solid ${branch.color}`,
-                  borderRadius: '12px',
-                  padding: '20px',
-                  boxShadow: `0 4px 20px ${branch.color}15`
-                }}>
-                  {/* Branch Title & Metrics */}
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '14px', marginBottom: '14px' }}>
+          {/* Branch Filter Tabs */}
+          <div style={{ display: 'flex', gap: '8px', marginBottom: '16px', flexWrap: 'wrap' }}>
+            <button
+              onClick={() => setSelectedBranchId('ALL')}
+              style={{
+                background: selectedBranchId === 'ALL' ? 'var(--primary-orange)' : 'var(--bg-elevated)',
+                color: selectedBranchId === 'ALL' ? '#fff' : 'var(--text-muted)',
+                border: 'none', padding: '6px 14px', borderRadius: '8px', fontSize: '0.8rem', fontWeight: 700, cursor: 'pointer'
+              }}
+            >
+              All Branches ({branches.length})
+            </button>
+            {branches.map(b => (
+              <button
+                key={b.branch_id}
+                onClick={() => setSelectedBranchId(b.branch_id)}
+                style={{
+                  background: selectedBranchId === b.branch_id ? b.color : 'var(--bg-elevated)',
+                  color: selectedBranchId === b.branch_id ? '#fff' : 'var(--text-muted)',
+                  border: `1px solid ${b.color}`, padding: '6px 14px', borderRadius: '8px',
+                  fontSize: '0.8rem', fontWeight: 700, cursor: 'pointer'
+                }}
+              >
+                {b.name} ({b.total_active_buses} buses)
+              </button>
+            ))}
+          </div>
+
+          {/* Branch Cards */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            {branches
+              .filter(b => selectedBranchId === 'ALL' || selectedBranchId === b.branch_id)
+              .map(b => (
+                <div key={b.branch_id} className="glass-panel" style={{ padding: '20px', borderLeft: `6px solid ${b.color}` }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', marginBottom: '12px' }}>
                     <div>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <span style={{ background: branch.color, color: '#0f172a', fontWeight: 800, fontSize: '0.72rem', padding: '2px 8px', borderRadius: '12px' }}>
-                          {branch.branch_id}
+                        <span style={{ background: b.color, color: '#fff', fontSize: '0.72rem', padding: '2px 8px', borderRadius: '6px', fontWeight: 800 }}>
+                          {b.branch_id}
                         </span>
-                        <h3 style={{ fontSize: '1.05rem', fontWeight: 800, color: '#f1f5f9' }}>
-                          {branch.name}
-                        </h3>
+                        <strong style={{ fontSize: '1.05rem', color: 'var(--text-main)' }}>{b.name}</strong>
                       </div>
-                      <div style={{ fontSize: '0.8rem', color: '#94a3b8', marginTop: '4px' }}>
-                        Via: <strong style={{ color: branch.color }}>{branch.via}</strong> • Associated Routes: <b>{branch.routes.join(', ')}</b>
+                      <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '4px' }}>
+                        Via: <b style={{ color: b.color }}>{b.via}</b> • Routes: <b>{b.routes ? b.routes.join(', ') : 'DTC'}</b>
                       </div>
                     </div>
 
-                    <div style={{ display: 'flex', gap: '18px', flexWrap: 'wrap' }}>
+                    <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap' }}>
                       <div style={{ textAlign: 'center' }}>
-                        <span style={{ fontSize: '0.7rem', color: '#94a3b8' }}>ACTIVE FLEET</span>
-                        <div style={{ fontSize: '1.15rem', fontWeight: 800, color: branch.color }}>{branch.total_active_buses} buses</div>
+                        <span style={{ fontSize: '0.68rem', color: 'var(--text-dim)' }}>ACTIVE BUSES</span>
+                        <div style={{ fontSize: '1.15rem', fontWeight: 800, color: b.color }}>{b.total_active_buses}</div>
                       </div>
                       <div style={{ textAlign: 'center' }}>
-                        <span style={{ fontSize: '0.7rem', color: '#94a3b8' }}>NEXT BUS</span>
-                        <div style={{ fontSize: '1.15rem', fontWeight: 800, color: '#10b981' }}>~{branch.next_bus_eta_mins} mins</div>
+                        <span style={{ fontSize: '0.68rem', color: 'var(--text-dim)' }}>NEXT BUS</span>
+                        <div style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--accent-emerald)' }}>~{b.next_bus_eta_mins} mins</div>
                       </div>
                       <div style={{ textAlign: 'center' }}>
-                        <span style={{ fontSize: '0.7rem', color: '#94a3b8' }}>HEADWAY</span>
-                        <div style={{ fontSize: '1.15rem', fontWeight: 800, color: '#38bdf8' }}>{branch.avg_headway_mins} mins</div>
+                        <span style={{ fontSize: '0.68rem', color: 'var(--text-dim)' }}>AVG HEADWAY</span>
+                        <div style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--accent-cyan)' }}>{b.avg_headway_mins} mins</div>
                       </div>
                       <div style={{ textAlign: 'center' }}>
-                        <span style={{ fontSize: '0.7rem', color: '#94a3b8' }}>CORRIDOR SPEED</span>
-                        <div style={{ fontSize: '1.15rem', fontWeight: 800, color: '#ff9933' }}>{branch.corridor_speed_kmh} km/h</div>
+                        <span style={{ fontSize: '0.68rem', color: 'var(--text-dim)' }}>CORRIDOR SPEED</span>
+                        <div style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--primary-orange)' }}>{b.corridor_speed_kmh} km/h</div>
                       </div>
                     </div>
                   </div>
 
-                  {/* Corridor Stop Sequence Track */}
-                  <div style={{ background: 'rgba(30, 41, 59, 0.45)', padding: '10px 14px', borderRadius: '8px', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '6px', overflowX: 'auto' }}>
-                    <span style={{ fontSize: '0.72rem', color: '#94a3b8', fontWeight: 700, whiteSpace: 'nowrap' }}>CORRIDOR TRACK:</span>
-                    {branch.stops.map((st, sIdx) => (
-                      <React.Fragment key={sIdx}>
-                        <span style={{
-                          background: sIdx === 0 ? '#10b981' : (sIdx === branch.stops.length - 1 ? '#ef4444' : '#334155'),
-                          color: '#fff', fontSize: '0.72rem', fontWeight: 700, padding: '3px 8px', borderRadius: '6px', whiteSpace: 'nowrap'
-                        }}>
-                          {st}
-                        </span>
-                        {sIdx < branch.stops.length - 1 && <span style={{ color: '#64748b', fontSize: '0.8rem' }}>➔</span>}
-                      </React.Fragment>
-                    ))}
-                  </div>
+                  {/* Stop Track */}
+                  {b.stops && b.stops.length > 0 && (
+                    <div style={{
+                      background: 'var(--bg-elevated)', padding: '10px 14px', borderRadius: '8px',
+                      display: 'flex', alignItems: 'center', gap: '6px', overflowX: 'auto', marginBottom: '14px'
+                    }}>
+                      <span style={{ fontSize: '0.72rem', color: 'var(--text-dim)', fontWeight: 800, whiteSpace: 'nowrap' }}>CORRIDOR TRACK:</span>
+                      {b.stops.map((st, sIdx) => (
+                        <React.Fragment key={sIdx}>
+                          <span style={{
+                            background: sIdx === 0 ? 'var(--accent-emerald)' : (sIdx === b.stops.length - 1 ? 'var(--accent-rose)' : 'var(--bg-card)'),
+                            color: '#fff', fontSize: '0.72rem', fontWeight: 700, padding: '3px 8px', borderRadius: '6px', whiteSpace: 'nowrap'
+                          }}>
+                            {st}
+                          </span>
+                          {sIdx < b.stops.length - 1 && <span style={{ color: 'var(--text-dim)', fontSize: '0.75rem' }}>➔</span>}
+                        </React.Fragment>
+                      ))}
+                    </div>
+                  )}
 
-                  {/* Table of Buses Running on this Branch between Point A & B */}
-                  {branch.buses && branch.buses.length > 0 ? (
-                    <div>
-                      <div style={{ fontSize: '0.82rem', fontWeight: 700, color: '#cbd5e1', marginBottom: '8px' }}>
-                        Active Buses In Transit on this Branch ({branch.buses.length}):
-                      </div>
-                      <div style={{ overflowX: 'auto', maxHeight: '280px', border: '1px solid rgba(255, 255, 255, 0.08)', borderRadius: '8px' }}>
-                        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.8rem', textAlign: 'left' }}>
-                          <thead style={{ background: '#1e293b', position: 'sticky', top: 0 }}>
-                            <tr>
-                              <th style={{ padding: '8px 12px', color: '#ff9933' }}>Bus Unit</th>
-                              <th style={{ padding: '8px 12px', color: '#ff9933' }}>Route</th>
-                              <th style={{ padding: '8px 12px', color: '#ff9933' }}>Velocity</th>
-                              <th style={{ padding: '8px 12px', color: '#ff9933', minWidth: '160px' }}>Corridor Progress (A ➔ B)</th>
-                              <th style={{ padding: '8px 12px', color: '#ff9933' }}>Dist to Dest</th>
-                              <th style={{ padding: '8px 12px', color: '#ff9933' }}>Live ETA</th>
-                              <th style={{ padding: '8px 12px', color: '#ff9933' }}>Status</th>
+                  {/* Active Buses in Transit Table */}
+                  {b.buses && b.buses.length > 0 ? (
+                    <div style={{ overflowX: 'auto', border: '1px solid var(--border-glass)', borderRadius: '8px' }}>
+                      <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.78rem', textAlign: 'left' }}>
+                        <thead style={{ background: 'var(--bg-elevated)' }}>
+                          <tr>
+                            <th style={{ padding: '8px 12px', color: 'var(--primary-orange)' }}>Bus ID</th>
+                            <th style={{ padding: '8px 12px', color: 'var(--primary-orange)' }}>Route</th>
+                            <th style={{ padding: '8px 12px', color: 'var(--primary-orange)' }}>Speed</th>
+                            <th style={{ padding: '8px 12px', color: 'var(--primary-orange)', minWidth: '150px' }}>Corridor Progress (A ➔ B)</th>
+                            <th style={{ padding: '8px 12px', color: 'var(--primary-orange)' }}>Dist to Dest</th>
+                            <th style={{ padding: '8px 12px', color: 'var(--primary-orange)' }}>Live ETA</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {b.buses.map((bus, busIdx) => (
+                            <tr key={bus.bus_id + busIdx} style={{ borderBottom: '1px solid var(--border-glass)' }}>
+                              <td style={{ padding: '8px 12px', fontWeight: 800, fontFamily: "'JetBrains Mono', monospace" }}>
+                                #{bus.bus_id}
+                              </td>
+                              <td style={{ padding: '8px 12px', color: 'var(--accent-cyan)', fontWeight: 700 }}>
+                                {bus.route_id}
+                              </td>
+                              <td style={{ padding: '8px 12px' }}>
+                                {bus.speed_kmh} km/h
+                              </td>
+                              <td style={{ padding: '8px 12px' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                  <div style={{ flex: 1, height: '6px', background: 'var(--bg-elevated)', borderRadius: '3px', overflow: 'hidden' }}>
+                                    <div style={{ width: `${bus.progress_pct}%`, height: '100%', background: b.color }} />
+                                  </div>
+                                  <span style={{ fontSize: '0.72rem', color: 'var(--text-dim)' }}>{bus.progress_pct}%</span>
+                                </div>
+                              </td>
+                              <td style={{ padding: '8px 12px', color: 'var(--text-muted)' }}>
+                                {bus.dist_to_destination_km} km
+                              </td>
+                              <td style={{ padding: '8px 12px', fontWeight: 800, color: 'var(--accent-emerald)' }}>
+                                ~{bus.eta_to_dest_mins} mins
+                              </td>
                             </tr>
-                          </thead>
-                          <tbody>
-                            {branch.buses.map((b, bIdx) => {
-                              const isNext = bIdx === 0;
-                              return (
-                                <tr key={b.bus_id + bIdx} style={{
-                                  borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
-                                  background: isNext ? `${branch.color}12` : (bIdx % 2 === 0 ? 'rgba(15, 23, 42, 0.4)' : 'transparent')
-                                }}>
-                                  <td style={{ padding: '8px 12px', fontWeight: 800, fontFamily: "'JetBrains Mono', monospace" }}>
-                                    {isNext && <span style={{ color: '#10b981', marginRight: '4px' }}>⚡</span>}
-                                    {b.bus_id}
-                                  </td>
-                                  <td style={{ padding: '8px 12px', color: '#38bdf8', fontWeight: 600 }}>{b.route_id}</td>
-                                  <td style={{ padding: '8px 12px' }}>
-                                    <span style={{ fontWeight: 700, color: b.speed_kmh >= 20 ? '#10b981' : (b.speed_kmh >= 8 ? '#f59e0b' : '#ef4444') }}>
-                                      {b.speed_kmh} km/h
-                                    </span>
-                                  </td>
-                                  <td style={{ padding: '8px 12px' }}>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                      <div style={{ flex: 1, height: '6px', background: '#334155', borderRadius: '3px', overflow: 'hidden' }}>
-                                        <div style={{ width: `${b.progress_pct}%`, height: '100%', background: branch.color }} />
-                                      </div>
-                                      <span style={{ fontSize: '0.72rem', color: '#cbd5e1', minWidth: '35px' }}>{b.progress_pct}%</span>
-                                    </div>
-                                  </td>
-                                  <td style={{ padding: '8px 12px', color: '#94a3b8' }}>{b.dist_to_destination_km} km</td>
-                                  <td style={{ padding: '8px 12px' }}>
-                                    <span style={{
-                                      fontWeight: 800,
-                                      color: isNext ? '#10b981' : '#cbd5e1',
-                                      padding: isNext ? '2px 6px' : '0',
-                                      borderRadius: '4px',
-                                      background: isNext ? '#10b98120' : 'transparent'
-                                    }}>
-                                      {b.eta_to_dest_mins} mins
-                                    </span>
-                                  </td>
-                                  <td style={{ padding: '8px 12px' }}>
-                                    <span style={{
-                                      fontSize: '0.72rem', padding: '2px 8px', borderRadius: '10px',
-                                      background: b.status.includes('Near') ? '#10b98125' : (b.status.includes('Mid') ? '#38bdf825' : '#f59e0b25'),
-                                      color: b.status.includes('Near') ? '#34d399' : (b.status.includes('Mid') ? '#38bdf8' : '#fbbf24')
-                                    }}>
-                                      {b.status}
-                                    </span>
-                                  </td>
-                                </tr>
-                              );
-                            })}
-                          </tbody>
-                        </table>
-                      </div>
+                          ))}
+                        </tbody>
+                      </table>
                     </div>
                   ) : (
-                    <div style={{ fontSize: '0.78rem', color: '#f59e0b', fontStyle: 'italic', padding: '10px 0' }}>
-                      No buses detected mid-transit along this specific branch corridor right now.
+                    <div style={{ fontSize: '0.78rem', color: 'var(--accent-amber)', fontStyle: 'italic', padding: '6px 0' }}>
+                      No buses detected along this branch corridor right now.
                     </div>
                   )}
                 </div>
               ))}
-            </div>
           </div>
         </div>
       );
@@ -1825,4 +2703,3 @@
   </script>
 </body>
 </html>
-
