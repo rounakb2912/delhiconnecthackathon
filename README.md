@@ -26,7 +26,20 @@ An end-to-end intelligent traffic modeling engine and dynamic journey planner bu
 - **Click-to-Route:** Click anywhere on the map to set origin and destination — no dropdowns needed.
 - **GeoJSON Export:** Ready for frontend GIS visualization.
 
-### 4. Interactive MVP Dashboard (`frontend/` & `app.py`)
+### 4. High-Performance Unified Web Frontend (`static/index.html` & `server.py`)
+
+- **Interactive Route Simulation Engine:** Click **"Simulate Journey"** to watch an animated bus marker travel smoothly along the planned route in real-time with an active simulation progress bar and telemetry HUD.
+- **Lock-On Camera & Live Bus Tracking:** Click on any bus in the map or fleet table to enter lock-on mode: camera follows the bus in real-time with live speed, route, and heading HUD.
+- **Smart Autocomplete Stop Search:** Intelligent search for origin and destination stops with instant filtering, serviced bus routes, and Delhi Metro line interchange connectivity tags (e.g. 🚇 Blue/Yellow Line).
+- **Dual Theme Support:** One-click toggle between **Cyberpunk Command Center Dark Mode** and **Clean Daylight Transit Light Mode**.
+- **Interactive Stop Arrival ETA Board:** Select any stop to inspect upcoming incoming buses within 7.5 km with countdown timers and status badges.
+- **AI Congestion Time-Machine:** Slider previewing Delhi traffic conditions from `Now` to `+60 Mins` using Gradient Boosting predictions.
+- **Fleet Bunching Dispatcher Rebalancer:** Interactive tool to resolve bus clumping with one-click headway hold dispatch orders.
+- **Multi-Route Corridor Branching:** Side-by-side comparative analysis of parallel transit branches with active fleet counts, headways, and corridor tracks.
+- **Bolo Delhi Voice Assistant:** Speech recognition route search with audio visualizer and speech-to-audio feedback.
+- **Digital Commuter Transit Pass:** Printable DTC-styled commuter pass with QR code and fare summary.
+
+### 5. Interactive Streamlit Dashboard (`frontend/` & `app.py`)
 
 #### 🗺️ 2D Folium Map
 - **Switchable Basemaps:** Dark Matter (command center), Clean Light, and OpenStreetMap — toggle instantly.
